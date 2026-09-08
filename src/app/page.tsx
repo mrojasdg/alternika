@@ -1,11 +1,11 @@
 "use client";
 
 import Link from "next/link";
-import Image from "next/image";
 import { motion } from "framer-motion";
 import { TextReveal } from "@/components/TextReveal";
 import { AboutSection } from "@/components/AboutSection";
 import { ServicesSection } from "@/components/ServicesSection";
+import { ClientsSection } from "@/components/ClientsSection";
 import { ProjectCard } from "@/components/ProjectCard";
 import { PROJECTS } from "@/data/projects";
 import { ArrowUpRight, Sparkles, Layers, Palette, Share2, Globe } from "lucide-react";
@@ -15,13 +15,12 @@ export default function Home() {
 
   return (
     <div className="relative">
-      {/* HERO SECTION */}
-      <section className="relative min-h-[90vh] flex items-center justify-center pt-12 pb-20 overflow-hidden">
-        {/* Glowing Background Light Orbs */}
-        <div className="absolute top-1/4 left-1/2 -translate-x-1/2 w-[600px] h-[600px] bg-cyan-accent/10 rounded-full blur-[140px] pointer-events-none" />
-        <div className="absolute top-1/3 right-10 w-[350px] h-[350px] bg-blue-600/10 rounded-full blur-[120px] pointer-events-none" />
+      {/* HERO SECTION (CENTERED & CENTURY GOTHIC) */}
+      <section className="relative min-h-[85vh] flex items-center justify-center pt-16 pb-24 overflow-hidden text-center">
+        {/* Ambient Glows */}
+        <div className="absolute top-1/4 left-1/2 -translate-x-1/2 w-[650px] h-[650px] bg-cyan-accent/10 rounded-full blur-[140px] pointer-events-none" />
 
-        <div className="max-w-7xl mx-auto px-6 md:px-12 relative z-10 w-full">
+        <div className="max-w-6xl mx-auto px-6 md:px-12 relative z-10 w-full flex flex-col items-center">
           {/* Badge */}
           <motion.div
             initial={{ opacity: 0, y: 20 }}
@@ -33,9 +32,9 @@ export default function Home() {
             <span>Agencia de Diseño Digital & Marca</span>
           </motion.div>
 
-          {/* Cuberto Main Title Reveal */}
-          <div className="max-w-5xl mb-8">
-            <h1 className="font-display text-4xl sm:text-6xl md:text-7xl lg:text-8xl font-black text-white leading-[1.05] tracking-tight">
+          {/* Century Gothic Letter-by-Letter Animated Headline */}
+          <div className="mb-8 w-full flex justify-center">
+            <h1 className="font-display text-4xl sm:text-6xl md:text-7xl lg:text-8xl font-black text-white leading-[1.08] tracking-tight">
               <TextReveal
                 text="Creamos sitios web espectaculares y marcas inolvidables."
                 highlightWords={["sitios", "web", "inolvidables"]}
@@ -44,7 +43,7 @@ export default function Home() {
             </h1>
           </div>
 
-          {/* Subtitle & Value Proposition */}
+          {/* Subtitle */}
           <motion.p
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
@@ -54,12 +53,12 @@ export default function Home() {
             Especialistas en desarrollo web de alto rendimiento en Next.js, diseño print de lujo, estrategias de contenido para redes sociales e identidad de marca.
           </motion.p>
 
-          {/* Hero CTAs */}
+          {/* CTAs */}
           <motion.div
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.6, delay: 0.5 }}
-            className="flex flex-wrap items-center gap-5"
+            className="flex flex-wrap items-center justify-center gap-5"
           >
             <Link
               href="/proyectos"
@@ -71,20 +70,19 @@ export default function Home() {
             </Link>
 
             <Link
-              href="/#contacto"
+              href="mailto:hola@alternika.com.mx"
               className="inline-flex items-center gap-2 px-8 py-4 rounded-full border border-bg-border bg-bg-card hover:bg-bg-hover hover:border-cyan-accent/50 text-white font-semibold text-base transition-all duration-300"
-              data-cursor="CONTACTO"
             >
-              <span>Hablemos de tu idea</span>
+              <span>Contacto Directo</span>
             </Link>
           </motion.div>
 
-          {/* Quick Capability Tags */}
+          {/* Capability Indicators */}
           <motion.div
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             transition={{ duration: 0.8, delay: 0.7 }}
-            className="mt-20 pt-8 border-t border-bg-border/60 grid grid-cols-2 sm:grid-cols-4 gap-6"
+            className="mt-20 pt-8 border-t border-bg-border/60 grid grid-cols-2 sm:grid-cols-4 gap-8 w-full max-w-4xl"
           >
             {[
               { icon: Globe, label: "Sitios & Apps Web" },
@@ -94,8 +92,8 @@ export default function Home() {
             ].map((item, i) => {
               const Icon = item.icon;
               return (
-                <div key={i} className="flex items-center gap-3 text-slate-400 text-sm">
-                  <Icon className="w-5 h-5 text-cyan-accent shrink-0" />
+                <div key={i} className="flex items-center justify-center gap-2.5 text-slate-400 text-sm">
+                  <Icon className="w-4 h-4 text-cyan-accent shrink-0" />
                   <span className="font-medium text-slate-200">{item.label}</span>
                 </div>
               );
@@ -104,10 +102,10 @@ export default function Home() {
         </div>
       </section>
 
-      {/* ABOUT US SECTION (QUIÉNES SOMOS - CUBERTO STYLE) */}
-      <AboutSection />
+      {/* SERVICIOS EN ACORDEÓN (REFERENCIAS 1 Y 2) */}
+      <ServicesSection />
 
-      {/* FEATURED PORTFOLIO SECTION */}
+      {/* PORTAFOLIO DESTACADO */}
       <section className="py-24 md:py-36 bg-bg-dark relative">
         <div className="max-w-7xl mx-auto px-6 md:px-12">
           {/* Header */}
@@ -145,31 +143,11 @@ export default function Home() {
         </div>
       </section>
 
-      {/* SERVICES SECTION */}
-      <ServicesSection />
+      {/* MARCAS & CLIENTES (LOGOTIPOS) */}
+      <ClientsSection />
 
-      {/* CTA INTERACTIVE BANNER */}
-      <section className="py-24 bg-gradient-to-b from-bg-dark to-bg-card border-t border-bg-border/60 relative overflow-hidden">
-        <div className="absolute inset-0 bg-cyan-accent/5 pointer-events-none" />
-        <div className="max-w-5xl mx-auto px-6 text-center relative z-10 space-y-8">
-          <h2 className="font-display text-3xl sm:text-5xl md:text-6xl font-black text-white leading-tight">
-            ¿Listo para llevar tu marca al siguiente nivel digital?
-          </h2>
-          <p className="text-slate-300 text-lg md:text-xl max-w-2xl mx-auto">
-            Platiquemos sobre tus metas. Diseñamos la estrategia perfecta para tu empresa.
-          </p>
-          <div className="pt-4">
-            <Link
-              href="/#contacto"
-              className="inline-flex items-center gap-3 px-10 py-5 rounded-full bg-cyan-accent hover:bg-cyan-hover text-slate-950 font-extrabold text-lg transition-all duration-300 shadow-[0_0_40px_rgba(0,240,255,0.5)]"
-              data-cursor="EMPEZAR"
-            >
-              <span>Comenzar Proyecto</span>
-              <ArrowUpRight className="w-6 h-6" />
-            </Link>
-          </div>
-        </div>
-      </section>
+      {/* QUIÉNES SOMOS & DATOS DUROS (REFERENCIA 3: POR QUÉ ALTERNIKA) */}
+      <AboutSection />
     </div>
   );
 }

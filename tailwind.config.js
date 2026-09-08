@@ -22,7 +22,8 @@ module.exports = {
       },
       fontFamily: {
         sans: ["var(--font-inter)", "sans-serif"],
-        display: ["var(--font-syne)", "sans-serif"],
+        display: ['"Century Gothic"', "CenturyGothic", "AppleGothic", "sans-serif"],
+        century: ['"Century Gothic"', "CenturyGothic", "AppleGothic", "sans-serif"],
       },
       animation: {
         'pulse-slow': 'pulse 4s cubic-bezier(0.4, 0, 0.6, 1) infinite',

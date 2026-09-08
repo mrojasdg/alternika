@@ -17,62 +17,67 @@ export function TextReveal({
 }: TextRevealProps) {
   const words = text.split(" ");
 
-  const container = {
+  const containerVariants = {
     hidden: { opacity: 0 },
     visible: {
       opacity: 1,
       transition: {
-        staggerChildren: 0.04,
+        staggerChildren: 0.025,
         delayChildren: delay,
       },
     },
   };
 
-  const child = {
+  const letterVariants = {
+    hidden: {
+      opacity: 0,
+      y: "100%",
+      rotateX: 60,
+    },
     visible: {
       opacity: 1,
       y: 0,
       rotateX: 0,
       transition: {
         type: "spring",
-        damping: 18,
-        stiffness: 100,
+        damping: 20,
+        stiffness: 120,
       },
-    },
-    hidden: {
-      opacity: 0,
-      y: "110%",
-      rotateX: 45,
     },
   };
 
   return (
     <motion.span
-      className={`inline-flex flex-wrap gap-x-[0.28em] gap-y-[0.1em] overflow-hidden ${className}`}
-      variants={container}
+      className={`inline-flex flex-wrap gap-x-[0.25em] gap-y-[0.05em] ${className}`}
+      variants={containerVariants}
       initial="hidden"
       whileInView="visible"
-      viewport={{ once: true, margin: "-50px" }}
+      viewport={{ once: true, margin: "-40px" }}
     >
-      {words.map((word, i) => {
-        // Clean word for comparison (remove punctuation)
+      {words.map((word, wordIndex) => {
         const cleanWord = word.replace(/[^a-zA-ZáéíóúÁÉÍÓÚñÑ]/g, "").toLowerCase();
         const isHighlighted = highlightWords.some(
           (hw) => hw.toLowerCase() === cleanWord
         );
 
         return (
-          <span key={i} className="inline-block overflow-hidden py-1">
-            <motion.span
-              variants={child}
-              className={`inline-block origin-bottom ${
-                isHighlighted
-                  ? "text-cyan-accent font-semibold drop-shadow-[0_0_15px_rgba(0,240,255,0.4)]"
-                  : "text-white"
-              }`}
-            >
-              {word}
-            </motion.span>
+          <span
+            key={wordIndex}
+            className="inline-flex overflow-hidden py-1 whitespace-nowrap"
+          >
+            {word.split("").map((char, charIndex) => (
+              <motion.span
+                key={charIndex}
+                variants={letterVariants}
+                className={`inline-block origin-bottom ${
+                  isHighlighted
+                    ? "text-cyan-accent font-semibold drop-shadow-[0_0_15px_rgba(0,240,255,0.4)]"
+                    : "text-white"
+                }`}
+              >
+                {char}
+              </motion.span>
+            ))}
           </span>
         );
       })}
