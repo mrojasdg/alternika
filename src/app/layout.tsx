@@ -53,7 +53,7 @@ export default function RootLayout({
         <SmoothScroll>
           <CustomCursor />
           <Header />
-          <main className="flex-grow pt-[80px] md:pt-[90px]">{children}</main>
+          <main className="flex-grow">{children}</main>
           <Footer />
         </SmoothScroll>
       </body>
