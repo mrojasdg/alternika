@@ -13,11 +13,16 @@
   --cyan-accent: #00f0ff;
 }
 
+html {
+  scroll-behavior: smooth !important;
+}
+
 body {
   background-color: #060b17;
   color: #f8fafc;
   overflow-x: hidden;
   font-feature-settings: "cv02", "cv03", "cv04", "cv11";
+  scroll-behavior: smooth;
 }
 
 h1, h2, h3, h4, .font-display {

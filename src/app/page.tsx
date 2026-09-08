@@ -8,20 +8,20 @@ import { ServicesSection } from "@/components/ServicesSection";
 import { ClientsSection } from "@/components/ClientsSection";
 import { ProjectCard } from "@/components/ProjectCard";
 import { PROJECTS } from "@/data/projects";
-import { ArrowUpRight, Sparkles, Layers, Palette, Share2, Globe, Camera, Box } from "lucide-react";
+import { ArrowUpRight, Layers, Palette, Share2, Globe, Camera, Box } from "lucide-react";
 
 export default function Home() {
   const featuredProjects = PROJECTS.filter((p) => p.featured);
 
   return (
     <div className="relative">
-      {/* HERO SECTION (DARK BLUE MESH GRADIENT INSPIRED BY REFERENCE IMAGE) */}
+      {/* HERO SECTION */}
       <section className="relative min-h-[85vh] flex flex-col items-center justify-center pt-20 pb-24 overflow-hidden text-center bg-[#050b18]">
         
         {/* Grainy Mesh Gradient Background Layer */}
         <div className="absolute inset-0 bg-gradient-to-b from-[#07132b] via-[#091b3a] to-[#050b18] opacity-90 pointer-events-none" />
         
-        {/* Deep Blue Glow Orbs inspired by user image reference */}
+        {/* Deep Blue Glow Orbs */}
         <div className="absolute top-1/4 left-1/2 -translate-x-1/2 w-[700px] h-[500px] bg-[radial-gradient(circle_at_center,rgba(0,180,255,0.18)_0%,rgba(5,15,40,0)_70%)] pointer-events-none blur-2xl" />
         <div className="absolute top-10 left-1/4 w-[400px] h-[400px] bg-[radial-gradient(circle_at_center,rgba(0,240,255,0.12)_0%,rgba(5,15,40,0)_70%)] pointer-events-none blur-3xl" />
         <div className="absolute bottom-10 right-1/4 w-[450px] h-[450px] bg-[radial-gradient(circle_at_center,rgba(10,35,80,0.4)_0%,rgba(5,15,40,0)_70%)] pointer-events-none blur-3xl" />
@@ -29,37 +29,26 @@ export default function Home() {
         {/* Content Container */}
         <div className="max-w-5xl mx-auto px-6 md:px-12 relative z-10 w-full flex flex-col items-center justify-center">
           
-          {/* Top Pill Badge */}
-          <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.5 }}
-            className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full border border-cyan-accent/40 bg-cyan-dim/80 backdrop-blur-md text-cyan-accent text-xs font-semibold uppercase tracking-wider mb-8"
-          >
-            <Sparkles className="w-3.5 h-3.5" />
-            <span>Diseño Web · Print · Redes Sociales · Branding</span>
-          </motion.div>
-
-          {/* Centered Century Gothic Animated Title */}
-          <div className="mb-6 w-full flex justify-center text-center">
-            <h1 className="font-display text-4xl sm:text-6xl md:text-7xl font-black text-white leading-[1.1] tracking-tight">
+          {/* Centered Century Gothic Animated Title (Exact 3-Line Copy Requested) */}
+          <div className="mb-8 w-full flex justify-center text-center">
+            <h1 className="font-display text-4xl sm:text-6xl md:text-7xl font-black text-white leading-[1.12] tracking-tight">
               <TextReveal
-                text="Creamos sitios web espectaculares y marcas inolvidables."
-                highlightWords={["sitios", "web", "inolvidables"]}
+                text="Una buena idea. Infinitas formas de crearla. Experiencias que no se olvidan."
+                highlightWords={["idea.", "crearla.", "olvidan."]}
                 delay={0.1}
                 align="center"
               />
             </h1>
           </div>
 
-          {/* Concise & Compact Descriptive Copy */}
+          {/* Concise Subtitle Copy */}
           <motion.p
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.6, delay: 0.4 }}
             className="text-slate-300 text-sm sm:text-base md:text-lg max-w-2xl mx-auto leading-relaxed mb-10 font-normal text-center"
           >
-            Agencia de diseño y tecnología especializada en sitios web de alto rendimiento, productos impresos de lujo, producción de foto/video, 3D e identidad de marca.
+            Agencia de diseño y tecnología especializada en desarrollo web, productos impresos de lujo, redes sociales, foto/video, 3D e identidad de marca.
           </motion.p>
 
           {/* Buttons */}
@@ -113,7 +102,7 @@ export default function Home() {
         </div>
       </section>
 
-      {/* SERVICIOS EN ACORDEÓN (01 a 06) */}
+      {/* SERVICIOS EN ACORDEÓN */}
       <ServicesSection />
 
       {/* PORTAFOLIO DESTACADO */}
