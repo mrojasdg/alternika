@@ -7,13 +7,15 @@ interface TextRevealProps {
   className?: string;
   delay?: number;
   highlightWords?: string[];
+  align?: "center" | "left" | "right";
 }
 
 export function TextReveal({
   text,
   className = "",
   delay = 0,
-  highlightWords = []
+  highlightWords = [],
+  align = "center"
 }: TextRevealProps) {
   const words = text.split(" ");
 
@@ -46,9 +48,11 @@ export function TextReveal({
     },
   };
 
+  const justifyClass = align === "center" ? "justify-center" : align === "right" ? "justify-end" : "justify-start";
+
   return (
     <motion.span
-      className={`inline-flex flex-wrap gap-x-[0.25em] gap-y-[0.05em] ${className}`}
+      className={`inline-flex flex-wrap ${justifyClass} text-center gap-x-[0.25em] gap-y-[0.05em] w-full ${className}`}
       variants={containerVariants}
       initial="hidden"
       whileInView="visible"

@@ -3,7 +3,7 @@ export interface Project {
   slug: string;
   title: string;
   subtitle: string;
-  category: 'Desarrollo Web' | 'Diseño Print' | 'Redes Sociales' | 'Branding';
+  category: 'Desarrollo Web' | 'Diseño Print' | 'Redes Sociales' | 'Branding' | 'Fotografía & Video' | 'Modelado 3D';
   year: string;
   client: string;
   location: string;
@@ -274,7 +274,7 @@ export const SERVICES = [
     id: "web",
     number: "01",
     title: "Diseño & Desarrollo Web",
-    description: "Crearemos sitios web y aplicaciones web a medida con las últimas tecnologías (Next.js, React, Tailwind). Animaciones fluidas, velocidad de carga instantánea y optimización SEO.",
+    description: "Creamos sitios web y aplicaciones web a medida con las últimas tecnologías (Next.js, React, Tailwind). Animaciones fluidas, velocidad de carga instantánea y optimización SEO.",
     items: [
       "Sitios Web Corporativos & Portafolios",
       "Tiendas en Línea (E-Commerce)",
@@ -310,12 +310,36 @@ export const SERVICES = [
     id: "branding",
     number: "04",
     title: "Branding e Identidad Visual",
-    description: "Construimos identidades de marca sólidas y memorables desde el concepto y el logotipo hasta el manual de marca y la voz comunicativa.",
+    description: "Construimos identidades de marca sólidas y memorables desde el concepto y el logotipo hasta el manual de marca y la guía visual.",
     items: [
       "Estrategia de Marca & Naming",
       "Diseño de Logotipo & Tipografía",
       "Manuales de Identidad Visual",
       "Design Systems & Guías UI"
+    ]
+  },
+  {
+    id: "foto-video",
+    number: "05",
+    title: "Fotografía & Video",
+    description: "Capturamos la esencia de tus productos, servicios y espacios con producción audiovisual cinemática, fotografía comercial y edición de alta definición.",
+    items: [
+      "Fotografía Comercial de Producto & E-Commerce",
+      "Video Corporativo, Institucional & Documental",
+      "Cobertura Audiovisual para Eventos & Lanzamientos",
+      "Edición Profesional, Color Grading & Postproducción"
+    ]
+  },
+  {
+    id: "3d",
+    number: "06",
+    title: "Modelado 3D & Renderizado",
+    description: "Damos vida a tus ideas en tres dimensiones mediante renders hiperrealistas de producto, arquitectura y assets 3D optimizados para experiencias web interactivas.",
+    items: [
+      "Renders Hiperrealistas de Producto & Packaging",
+      "Modelado 3D Interactivo para la Web (Three.js/GLTF)",
+      "Visualización Arquitectónica & Espacios Interiores",
+      "Animación 3D Promocional & Motion Graphics"
     ]
   }
 ];

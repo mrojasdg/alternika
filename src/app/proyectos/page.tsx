@@ -15,6 +15,8 @@ export default function PortfolioPage() {
     "Diseño Print",
     "Redes Sociales",
     "Branding",
+    "Fotografía & Video",
+    "Modelado 3D",
   ];
 
   const filteredProjects =
@@ -26,7 +28,7 @@ export default function PortfolioPage() {
     <div className="py-16 md:py-24 bg-bg-dark min-h-screen">
       <div className="max-w-7xl mx-auto px-6 md:px-12">
         {/* Header */}
-        <div className="mb-16">
+        <div className="mb-16 text-center">
           <motion.div
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
@@ -40,32 +42,37 @@ export default function PortfolioPage() {
             <TextReveal
               text="Nuestros proyectos destacados y casos de éxito."
               highlightWords={["proyectos", "éxito"]}
+              align="center"
             />
           </h1>
 
-          <p className="text-slate-400 text-lg md:text-xl max-w-3xl">
-            Explora nuestros trabajos en diseño y desarrollo web, publicaciones impresas, campañas para redes sociales e identidad de marca.
+          <p className="text-slate-400 text-base md:text-lg max-w-2xl mx-auto">
+            Explora nuestros trabajos en desarrollo web, publicaciones impresas, campañas para redes sociales, fotos/videos e identidad 3D.
           </p>
         </div>
 
         {/* Category Filters */}
-        <div className="flex flex-wrap gap-3 mb-12 border-b border-bg-border pb-6">
-          {categories.map((category) => (
-            <button
-              key={category}
-              onClick={() => setActiveCategory(category)}
-              className={`px-5 py-2.5 rounded-full text-xs font-bold transition-all duration-300 ${
-                activeCategory === category
-                  ? "bg-cyan-accent text-slate-950 shadow-[0_0_20px_rgba(0,240,255,0.4)]"
-                  : "bg-bg-card border border-bg-border text-slate-300 hover:border-cyan-accent/40 hover:text-white"
-              }`}
-            >
-              {category}
-              {category === "Todos"
-                ? ` (${PROJECTS.length})`
-                : ` (${PROJECTS.filter((p) => p.category === category).length})`}
-            </button>
-          ))}
+        <div className="flex flex-wrap items-center justify-center gap-3 mb-12 border-b border-bg-border pb-6">
+          {categories.map((category) => {
+            const count =
+              category === "Todos"
+                ? PROJECTS.length
+                : PROJECTS.filter((p) => p.category === category).length;
+
+            return (
+              <button
+                key={category}
+                onClick={() => setActiveCategory(category)}
+                className={`px-5 py-2.5 rounded-full text-xs font-bold transition-all duration-300 ${
+                  activeCategory === category
+                    ? "bg-cyan-accent text-slate-950 shadow-[0_0_20px_rgba(0,240,255,0.4)]"
+                    : "bg-bg-card border border-bg-border text-slate-300 hover:border-cyan-accent/40 hover:text-white"
+                }`}
+              >
+                {category} ({count})
+              </button>
+            );
+          })}
         </div>
 
         {/* Projects Grid */}
