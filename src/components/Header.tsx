@@ -2,6 +2,7 @@
 
 import { useState, useEffect } from "react";
 import Link from "next/link";
+import Image from "next/image";
 import { motion, AnimatePresence } from "framer-motion";
 import { Menu, X, ArrowUpRight } from "lucide-react";
 
@@ -21,23 +22,30 @@ export function Header() {
     { name: "Proyectos", href: "/proyectos" },
     { name: "Servicios", href: "/#servicios" },
     { name: "Quiénes Somos", href: "/#quienes-somos" },
-    { name: "Contacto", href: "/#contacto" },
+    { name: "Contacto", href: "mailto:hola@alternika.com.mx" },
   ];
 
   return (
     <header
       className={`fixed top-0 left-0 right-0 z-40 transition-all duration-300 ${
         isScrolled
-          ? "bg-bg-dark/80 backdrop-blur-lg border-b border-bg-border/60 py-4"
-          : "bg-transparent py-6 md:py-8"
+          ? "bg-bg-dark/85 backdrop-blur-xl border-b border-bg-border/80 py-3.5"
+          : "bg-transparent py-5 md:py-6"
       }`}
     >
-      <div className="max-w-7xl mx-auto px-6 md:px-12 flex items-center justify-between">
-        {/* Brand Logo */}
-        <Link href="/" className="group flex items-center gap-2">
-          <span className="font-display text-2xl md:text-3xl font-extrabold tracking-tight text-white group-hover:text-cyan-accent transition-colors">
-            ALTERNIKA<span className="text-cyan-accent inline-block animate-pulse">.</span>
-          </span>
+      <div className="max-w-7xl mx-auto px-5 md:px-12 flex items-center justify-between">
+        {/* Official SVG Logo */}
+        <Link href="/" className="group flex items-center gap-3 focus:outline-none">
+          <div className="relative h-8 md:h-10 w-auto flex items-center">
+            <Image
+              src="/img/Alternika_logo.svg"
+              alt="Alternika Logo"
+              width={160}
+              height={50}
+              className="h-8 md:h-10 w-auto object-contain transition-transform group-hover:scale-105"
+              priority
+            />
+          </div>
         </Link>
 
         {/* Desktop Navigation Links */}
@@ -53,11 +61,11 @@ export function Header() {
           ))}
         </nav>
 
-        {/* CTA Button */}
+        {/* CTA Button (Top Right - Activates Custom Cursor trigger) */}
         <div className="hidden md:flex items-center">
           <Link
-            href="/#contacto"
-            className="group relative inline-flex items-center gap-2 px-6 py-2.5 rounded-full border border-cyan-accent/50 bg-cyan-dim text-white text-sm font-semibold overflow-hidden transition-all duration-300 hover:border-cyan-accent hover:shadow-[0_0_20px_rgba(0,240,255,0.4)]"
+            href="mailto:hola@alternika.com.mx"
+            className="group relative inline-flex items-center gap-2 px-6 py-2.5 rounded-full border border-cyan-accent/50 bg-cyan-dim text-white text-xs md:text-sm font-semibold overflow-hidden transition-all duration-300 hover:border-cyan-accent hover:shadow-[0_0_20px_rgba(0,240,255,0.4)]"
             data-cursor="HABLEMOS"
           >
             <span className="relative z-10 group-hover:text-cyan-accent transition-colors">
@@ -73,7 +81,7 @@ export function Header() {
           className="md:hidden p-2 text-slate-200 hover:text-cyan-accent focus:outline-none"
           aria-label="Menú de navegación"
         >
-          {mobileMenuOpen ? <X className="w-7 h-7" /> : <Menu className="w-7 h-7" />}
+          {mobileMenuOpen ? <X className="w-6 h-6" /> : <Menu className="w-6 h-6" />}
         </button>
       </div>
 
@@ -84,26 +92,26 @@ export function Header() {
             initial={{ opacity: 0, y: -20 }}
             animate={{ opacity: 1, y: 0 }}
             exit={{ opacity: 0, y: -20 }}
-            className="md:hidden fixed inset-x-0 top-[72px] bg-bg-card/95 backdrop-blur-xl border-b border-bg-border p-6 shadow-2xl flex flex-col gap-6"
+            className="md:hidden fixed inset-x-0 top-[65px] bg-bg-card/95 backdrop-blur-2xl border-b border-bg-border p-6 shadow-2xl flex flex-col gap-5 z-50"
           >
             {navLinks.map((link) => (
               <Link
                 key={link.name}
                 href={link.href}
                 onClick={() => setMobileMenuOpen(false)}
-                className="text-lg font-medium text-slate-200 hover:text-cyan-accent transition-colors"
+                className="text-base font-medium text-slate-200 hover:text-cyan-accent transition-colors py-1"
               >
                 {link.name}
               </Link>
             ))}
-            <Link
-              href="/#contacto"
+            <a
+              href="mailto:hola@alternika.com.mx"
               onClick={() => setMobileMenuOpen(false)}
-              className="inline-flex items-center justify-center gap-2 px-6 py-3 rounded-full bg-cyan-accent text-slate-950 font-bold text-base hover:bg-cyan-hover transition-colors"
+              className="inline-flex items-center justify-center gap-2 px-6 py-3 rounded-full bg-cyan-accent text-slate-950 font-bold text-sm hover:bg-cyan-hover transition-colors mt-2"
             >
               Iniciar Proyecto
-              <ArrowUpRight className="w-5 h-5" />
-            </Link>
+              <ArrowUpRight className="w-4 h-4" />
+            </a>
           </motion.div>
         )}
       </AnimatePresence>

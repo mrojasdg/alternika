@@ -13,8 +13,25 @@
   --cyan-accent: #00f0ff;
 }
 
-html {
-  scroll-behavior: smooth !important;
+/* Lenis Smooth Scroll Styles */
+html.lenis, html.lenis body {
+  height: auto;
+}
+
+.lenis.lenis-smooth {
+  scroll-behavior: auto !important;
+}
+
+.lenis.lenis-smooth [data-lenis-prevent] {
+  overscroll-behavior: contain;
+}
+
+.lenis.lenis-stopped {
+  overflow: hidden;
+}
+
+.lenis.lenis-scrolling iframe {
+  pointer-events: none;
 }
 
 body {
@@ -22,7 +39,6 @@ body {
   color: #f8fafc;
   overflow-x: hidden;
   font-feature-settings: "cv02", "cv03", "cv04", "cv11";
-  scroll-behavior: smooth;
 }
 
 h1, h2, h3, h4, .font-display {

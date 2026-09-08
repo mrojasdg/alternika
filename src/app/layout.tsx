@@ -4,6 +4,7 @@ import "./globals.css";
 import { Header } from "@/components/Header";
 import { Footer } from "@/components/Footer";
 import { CustomCursor } from "@/components/CustomCursor";
+import { SmoothScroll } from "@/components/SmoothScroll";
 
 const inter = Inter({
   subsets: ["latin"],
@@ -47,12 +48,14 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="es" className={`${inter.variable} ${syne.variable} scroll-smooth`}>
+    <html lang="es" className={`${inter.variable} ${syne.variable}`}>
       <body className="bg-bg-dark text-slate-100 antialiased font-sans flex flex-col min-h-screen selection:bg-cyan-accent selection:text-slate-950">
-        <CustomCursor />
-        <Header />
-        <main className="flex-grow pt-[80px]">{children}</main>
-        <Footer />
+        <SmoothScroll>
+          <CustomCursor />
+          <Header />
+          <main className="flex-grow pt-[80px] md:pt-[90px]">{children}</main>
+          <Footer />
+        </SmoothScroll>
       </body>
     </html>
   );
