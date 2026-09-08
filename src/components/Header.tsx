@@ -29,20 +29,20 @@ export function Header() {
     <header
       className={`fixed top-0 left-0 right-0 z-40 transition-all duration-300 ${
         isScrolled
-          ? "bg-bg-dark/85 backdrop-blur-xl border-b border-bg-border/80 py-3.5"
+          ? "bg-bg-dark/85 backdrop-blur-xl border-b border-bg-border/80 py-3"
           : "bg-transparent py-5 md:py-6"
       }`}
     >
       <div className="max-w-7xl mx-auto px-5 md:px-12 flex items-center justify-between">
-        {/* Official SVG Logo */}
+        {/* Official SVG Logo (Larger Size) */}
         <Link href="/" className="group flex items-center gap-3 focus:outline-none">
-          <div className="relative h-8 md:h-10 w-auto flex items-center">
+          <div className="relative h-10 md:h-14 w-auto flex items-center">
             <Image
               src="/img/Alternika_logo.svg"
               alt="Alternika Logo"
-              width={160}
-              height={50}
-              className="h-8 md:h-10 w-auto object-contain transition-transform group-hover:scale-105"
+              width={220}
+              height={70}
+              className="h-10 md:h-14 w-auto object-contain transition-transform group-hover:scale-105"
               priority
             />
           </div>
@@ -61,7 +61,7 @@ export function Header() {
           ))}
         </nav>
 
-        {/* CTA Button (Top Right - Activates Custom Cursor trigger) */}
+        {/* CTA Button (Top Right) */}
         <div className="hidden md:flex items-center">
           <Link
             href="mailto:hola@alternika.com.mx"
@@ -92,7 +92,7 @@ export function Header() {
             initial={{ opacity: 0, y: -20 }}
             animate={{ opacity: 1, y: 0 }}
             exit={{ opacity: 0, y: -20 }}
-            className="md:hidden fixed inset-x-0 top-[65px] bg-bg-card/95 backdrop-blur-2xl border-b border-bg-border p-6 shadow-2xl flex flex-col gap-5 z-50"
+            className="md:hidden fixed inset-x-0 top-[70px] bg-bg-card/95 backdrop-blur-2xl border-b border-bg-border p-6 shadow-2xl flex flex-col gap-5 z-50"
           >
             {navLinks.map((link) => (
               <Link

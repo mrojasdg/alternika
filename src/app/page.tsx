@@ -15,8 +15,8 @@ export default function Home() {
 
   return (
     <div className="relative">
-      {/* HERO SECTION (DARK BLUE MESH GRADIENT & PERFECT 3-LINE HEADLINE) */}
-      <section className="relative min-h-[85vh] flex flex-col items-center justify-center pt-16 md:pt-24 pb-20 md:pb-28 overflow-hidden text-center bg-[#050b18]">
+      {/* HERO SECTION */}
+      <section className="relative min-h-[85vh] flex flex-col items-center justify-center pt-20 md:pt-28 pb-20 md:pb-28 overflow-hidden text-center bg-[#050b18]">
         
         {/* Grainy Mesh Gradient Background Layer */}
         <div className="absolute inset-0 bg-gradient-to-b from-[#07132b] via-[#091b3a] to-[#050b18] opacity-90 pointer-events-none" />
@@ -29,51 +29,33 @@ export default function Home() {
         {/* Content Container */}
         <div className="max-w-6xl mx-auto px-4 sm:px-6 md:px-12 relative z-10 w-full flex flex-col items-center justify-center">
           
-          {/* Centered Century Gothic Animated Title (Strict 3 Lines) */}
+          {/* Centered Century Gothic Animated Title (New Copy) */}
           <div className="mb-6 w-full flex flex-col items-center justify-center text-center">
-            <h1 className="font-display text-3xl sm:text-5xl md:text-6xl lg:text-7xl font-black text-white leading-[1.12] tracking-tight space-y-1">
-              <div className="w-full flex justify-center">
-                <TextReveal
-                  text="Una buena idea."
-                  highlightWords={["idea."]}
-                  delay={0.05}
-                  align="center"
-                />
-              </div>
-              <div className="w-full flex justify-center">
-                <TextReveal
-                  text="Infinitas formas de crearla."
-                  highlightWords={["crearla."]}
-                  delay={0.2}
-                  align="center"
-                />
-              </div>
-              <div className="w-full flex justify-center">
-                <TextReveal
-                  text="Experiencias que no se olvidan."
-                  highlightWords={["olvidan."]}
-                  delay={0.35}
-                  align="center"
-                />
-              </div>
+            <h1 className="font-display text-4xl sm:text-6xl md:text-7xl font-black text-white leading-[1.12] tracking-tight">
+              <TextReveal
+                text="Construimos marcas. Creamos experiencias."
+                highlightWords={["marcas.", "experiencias."]}
+                delay={0.1}
+                align="center"
+              />
             </h1>
           </div>
 
-          {/* Concise Subtitle Copy */}
+          {/* New Descriptive Copy (Smaller Font, Wider Box, Centered) */}
           <motion.p
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.6, delay: 0.5 }}
-            className="text-slate-300 text-xs sm:text-sm md:text-base max-w-xl mx-auto leading-relaxed mb-8 md:mb-10 font-normal text-center px-2"
+            transition={{ duration: 0.6, delay: 0.4 }}
+            className="text-slate-300 text-xs sm:text-sm md:text-base max-w-3xl mx-auto leading-relaxed mb-10 font-normal text-center px-2"
           >
-            Agencia de diseño y tecnología especializada en desarrollo web, productos impresos de lujo, redes sociales, foto/video, 3D e identidad de marca.
+            Tu aliado creativo y tecnológico. Fusionamos diseño web, estrategia digital, foto, video y 3D para que tu proyecto destaque en cualquier plataforma, física o digital.
           </motion.p>
 
           {/* Buttons */}
           <motion.div
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.6, delay: 0.6 }}
+            transition={{ duration: 0.6, delay: 0.5 }}
             className="flex flex-wrap items-center justify-center gap-3.5"
           >
             <Link
@@ -93,12 +75,12 @@ export default function Home() {
             </a>
           </motion.div>
 
-          {/* Mobile Responsive Capability Badges */}
+          {/* Capability Badges */}
           <motion.div
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             transition={{ duration: 0.8, delay: 0.7 }}
-            className="mt-12 md:mt-16 pt-6 border-t border-slate-800/80 grid grid-cols-3 sm:grid-cols-3 md:grid-cols-6 gap-3 sm:gap-4 w-full max-w-5xl"
+            className="mt-14 md:mt-16 pt-6 border-t border-slate-800/80 grid grid-cols-3 sm:grid-cols-3 md:grid-cols-6 gap-3 sm:gap-4 w-full max-w-5xl"
           >
             {[
               { icon: Globe, label: "Web & Apps" },
