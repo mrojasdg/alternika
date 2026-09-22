@@ -1,16 +1,15 @@
 "use client";
 
 import { motion } from "framer-motion";
-import { TextReveal } from "./TextReveal";
 import { Star, Trophy, Globe, Sparkles } from "lucide-react";
 
 export function AboutSection() {
   const hardDataCards = [
     {
       icon: Star,
-      stat: "8+",
-      label: "AÑOS DE EXPERIENCIA",
-      description: "Transformando ideas audaces en soluciones digitales y de diseño memorables."
+      stat: "2012",
+      label: "CONSTITUIDOS DESDE 2012",
+      description: "Más de 12 años transformando ideas audaces en soluciones digitales y de diseño memorables."
     },
     {
       icon: Trophy,
@@ -20,9 +19,9 @@ export function AboutSection() {
     },
     {
       icon: Globe,
-      stat: "120+",
+      stat: "+400",
       label: "PROYECTOS ENTREGADOS",
-      description: "Desarrollos web, marcas y campañas ejecutadas con éxito en LATAM y EE.UU."
+      description: "Desarrollos web, marcas, impresos y campañas ejecutadas con éxito en LATAM y EE.UU."
     }
   ];
 
@@ -32,7 +31,7 @@ export function AboutSection() {
       <div className="absolute top-1/4 left-0 w-96 h-96 bg-cyan-accent/5 rounded-full blur-3xl pointer-events-none" />
 
       <div className="max-w-7xl mx-auto px-6 md:px-12 relative z-10">
-        {/* Top Split Section (Reference Image 3: WHY ALTERNIKA) */}
+        {/* Top Split Section */}
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-12 items-start mb-16 pt-6 border-t border-bg-border/60">
           <motion.div
             initial={{ opacity: 0, y: 20 }}
@@ -57,15 +56,15 @@ export function AboutSection() {
             className="lg:col-span-8 text-slate-300 text-lg sm:text-xl leading-relaxed space-y-6"
           >
             <p>
-              Durante más de 8 años, en <strong className="text-white">Alternika</strong> hemos ayudado a empresas, startups y firmas consolidadas a transformar visiones ambiciosas en productos digitales y de diseño de alto impacto.
+              Constituidos desde <strong className="text-white">2012</strong>, en <strong className="text-white">Alternika</strong> hemos acompañado a empresas, startups y marcas consolidadas en su evolución visual y tecnológica.
             </p>
             <p>
-              Nuestro trabajo abarca desde desarrollo web interactivo en Next.js hasta papelería print de lujo, empaques y estrategias de contenido en redes sociales. Lo que más nos importa es construir alianzas a largo plazo y generar resultados de negocio medibles.
+              Nuestro trabajo abarca desde desarrollo web interactivo en Next.js hasta papelería print de lujo, empaques, producción de foto/video, 3D y estrategias de contenido en redes sociales. Lo que más nos importa es construir alianzas a largo plazo y generar resultados de negocio medibles.
             </p>
           </motion.div>
         </div>
 
-        {/* Hard Data Cards Grid (Reference Image 3: Soft Stat Cards) */}
+        {/* Hard Data Cards Grid */}
         <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
           {hardDataCards.map((card, index) => {
             const Icon = card.icon;

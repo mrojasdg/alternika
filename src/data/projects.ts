@@ -174,7 +174,7 @@ export const PROJECTS: Project[] = [
       { label: "Leads calificados mensuales", value: "+95" },
       { label: "Tiempo de carga inicial", value: "0.8s" }
     ],
-    featured: false
+    featured: true
   },
   {
     id: "6",

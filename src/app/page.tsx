@@ -30,7 +30,7 @@ export default function Home() {
         <div className="absolute top-1/3 -right-32 w-[500px] h-[400px] bg-cyan-accent/15 rounded-full blur-[120px] pointer-events-none -rotate-45" />
         <div className="absolute top-1/4 left-1/2 -translate-x-1/2 w-[800px] h-[500px] bg-[radial-gradient(circle_at_center,rgba(0,180,255,0.15)_0%,rgba(4,8,20,0)_70%)] pointer-events-none blur-2xl" />
 
-        {/* Top Clean Transparent Logo (Larger Size & Positioned Higher) */}
+        {/* Top Clean Transparent Logo */}
         <div className="relative z-10 w-full flex justify-center pt-2">
           <motion.div
             initial={{ opacity: 0, scale: 0.9 }}
@@ -49,10 +49,10 @@ export default function Home() {
           </motion.div>
         </div>
 
-        {/* Main Hero Center Content Container (Wider Box max-w-7xl) */}
+        {/* Main Hero Center Content Container */}
         <div className="max-w-7xl mx-auto px-4 sm:px-6 md:px-12 relative z-10 w-full flex flex-col items-center justify-center my-auto py-6">
           
-          {/* Centered Century Gothic Headline (Strict 2 Lines) */}
+          {/* Centered Century Gothic Headline */}
           <div className="mb-6 w-full flex flex-col items-center justify-center text-center">
             <h1 className="font-display text-3xl sm:text-5xl md:text-6xl lg:text-7xl xl:text-8xl font-black text-white leading-[1.08] tracking-tight space-y-1">
               <div className="w-full flex justify-center">
@@ -74,7 +74,7 @@ export default function Home() {
             </h1>
           </div>
 
-          {/* Descriptive Copy (Slightly Smaller & Centered in max-w-3xl) */}
+          {/* Descriptive Copy */}
           <motion.p
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
@@ -168,21 +168,25 @@ export default function Home() {
                 <TextReveal text="Proyectos Destacados" highlightWords={["Proyectos"]} align="left" />
               </h2>
             </div>
-
-            <Link
-              href="/proyectos"
-              className="inline-flex items-center gap-2 text-xs sm:text-sm font-bold text-cyan-accent hover:text-white transition-colors group"
-            >
-              <span>Ver todos los proyectos</span>
-              <ArrowUpRight className="w-4 h-4 group-hover:translate-x-0.5 group-hover:-translate-y-0.5 transition-transform" />
-            </Link>
           </div>
 
           {/* Project Cards Grid */}
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-8 md:gap-12">
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-8 md:gap-12 mb-16">
             {featuredProjects.map((project, idx) => (
               <ProjectCard key={project.id} project={project} index={idx} />
             ))}
+          </div>
+
+          {/* Bottom Button "Ver más proyectos" */}
+          <div className="flex justify-center pt-4">
+            <Link
+              href="/proyectos"
+              className="inline-flex items-center gap-3 px-10 py-4 rounded-full bg-cyan-dim border border-cyan-accent/50 text-cyan-accent hover:bg-cyan-accent hover:text-slate-950 font-extrabold text-base transition-all duration-300 shadow-[0_0_25px_rgba(0,240,255,0.25)] group"
+              data-cursor="PORTAFOLIO"
+            >
+              <span>Ver más proyectos</span>
+              <ArrowUpRight className="w-5 h-5 group-hover:translate-x-1 group-hover:-translate-y-1 transition-transform" />
+            </Link>
           </div>
         </div>
       </section>
