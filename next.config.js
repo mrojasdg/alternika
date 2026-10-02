@@ -9,6 +9,14 @@ const nextConfig = {
       },
     ],
   },
+  async rewrites() {
+    return [
+      {
+        source: '/maurojas.html',
+        destination: '/maurojas',
+      },
+    ];
+  },
 };
 
 module.exports = nextConfig;
