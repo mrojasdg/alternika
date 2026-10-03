@@ -4,7 +4,22 @@
 
 @font-face {
   font-family: 'Century Gothic';
-  src: local('Century Gothic'), local('CenturyGothic'), local('AppleGothic');
+  src: url('/img/fonts/centurygothic-webfont.woff2') format('woff2'),
+       url('/img/fonts/centurygothic-webfont.woff') format('woff'),
+       local('Century Gothic'), local('CenturyGothic'), local('AppleGothic');
+  font-weight: 400;
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: 'Century Gothic';
+  src: url('/img/fonts/centurygothic_bold-webfont.woff2') format('woff2'),
+       url('/img/fonts/centurygothic_bold-webfont.woff') format('woff'),
+       local('Century Gothic Bold'), local('CenturyGothic-Bold');
+  font-weight: 700;
+  font-style: normal;
+  font-display: swap;
 }
 
 :root {
