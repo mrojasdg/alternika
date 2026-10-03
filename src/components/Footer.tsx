@@ -1,9 +1,17 @@
 "use client";
 
 import Link from "next/link";
+import { usePathname } from "next/navigation";
 import { Instagram, Linkedin, Facebook, Mail, Globe } from "lucide-react";
 
 export function Footer() {
+  const pathname = usePathname();
+
+  // Hide footer completely on digital card route (/maurojas & /maurojas.html)
+  if (pathname?.includes("/maurojas")) {
+    return null;
+  }
+
   const navCol1 = [
     { name: "Servicios", href: "/#servicios" },
     { name: "Proyectos", href: "/proyectos" },
@@ -91,7 +99,7 @@ export function Footer() {
             <span>{new Date().getFullYear()}, Alternika</span>
           </div>
 
-          {/* Circular Social Buttons (LinkedIn, Facebook, Instagram) */}
+          {/* Circular Social Buttons */}
           <div className="flex items-center gap-3">
             {socialLinks.map((item) => {
               const Icon = item.icon;

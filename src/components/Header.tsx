@@ -3,21 +3,27 @@
 import { useState, useEffect } from "react";
 import Link from "next/link";
 import Image from "next/image";
+import { usePathname } from "next/navigation";
 import { motion, AnimatePresence } from "framer-motion";
 import { Menu, X, ArrowUpRight } from "lucide-react";
 
 export function Header() {
+  const pathname = usePathname();
   const [isScrolled, setIsScrolled] = useState(false);
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
 
   useEffect(() => {
     const handleScroll = () => {
-      // Menu appears only after scrolling 60px down
       setIsScrolled(window.scrollY > 60);
     };
     window.addEventListener("scroll", handleScroll, { passive: true });
     return () => window.removeEventListener("scroll", handleScroll);
   }, []);
+
+  // Hide header completely on digital card route (/maurojas & /maurojas.html)
+  if (pathname?.includes("/maurojas")) {
+    return null;
+  }
 
   const navLinks = [
     { name: "Proyectos", href: "/proyectos" },
@@ -39,13 +45,13 @@ export function Header() {
           <div className="max-w-7xl mx-auto px-5 md:px-12 flex items-center justify-between">
             {/* Official SVG Logo */}
             <Link href="/" className="group flex items-center gap-3 focus:outline-none">
-              <div className="relative h-9 md:h-11 w-auto flex items-center">
+              <div className="relative h-10 md:h-14 w-auto flex items-center">
                 <Image
                   src="/img/Alternika_logo.svg"
                   alt="Alternika Logo"
-                  width={180}
-                  height={60}
-                  className="h-9 md:h-11 w-auto object-contain transition-transform group-hover:scale-105"
+                  width={220}
+                  height={70}
+                  className="h-10 md:h-14 w-auto object-contain transition-transform group-hover:scale-105"
                   priority
                 />
               </div>
@@ -68,7 +74,7 @@ export function Header() {
             <div className="hidden md:flex items-center">
               <Link
                 href="mailto:hola@alternika.com.mx"
-                className="group relative inline-flex items-center gap-2 px-6 py-2 rounded-full border border-cyan-accent/50 bg-cyan-dim text-white text-xs md:text-sm font-semibold transition-all duration-300 hover:border-cyan-accent hover:shadow-[0_0_20px_rgba(0,240,255,0.4)]"
+                className="group relative inline-flex items-center gap-2 px-6 py-2.5 rounded-full border border-cyan-accent/50 bg-cyan-dim text-white text-xs md:text-sm font-semibold transition-all duration-300 hover:border-cyan-accent hover:shadow-[0_0_20px_rgba(0,240,255,0.4)]"
                 data-cursor="HABLEMOS"
               >
                 <span className="relative z-10 group-hover:text-cyan-accent transition-colors">
@@ -95,7 +101,7 @@ export function Header() {
                 initial={{ opacity: 0, y: -20 }}
                 animate={{ opacity: 1, y: 0 }}
                 exit={{ opacity: 0, y: -20 }}
-                className="md:hidden fixed inset-x-0 top-[65px] bg-[#060b17]/95 backdrop-blur-2xl border-b border-[#101f3f] p-6 shadow-2xl flex flex-col gap-4 z-50"
+                className="md:hidden fixed inset-x-0 top-[70px] bg-bg-card/95 backdrop-blur-2xl border-b border-bg-border p-6 shadow-2xl flex flex-col gap-5 z-50"
               >
                 {navLinks.map((link) => (
                   <Link
