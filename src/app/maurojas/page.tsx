@@ -41,7 +41,7 @@ END:VCARD`;
       <div className="absolute top-1/4 left-1/2 -translate-x-1/2 w-[500px] h-[400px] bg-[radial-gradient(circle_at_center,rgba(0,180,255,0.18)_0%,rgba(4,8,20,0)_70%)] pointer-events-none blur-3xl" />
       <div className="absolute bottom-10 right-10 w-[300px] h-[300px] bg-cyan-accent/10 rounded-full blur-3xl pointer-events-none" />
 
-      {/* Slimmer Centered Card Container (max-w-[340px] sm:max-w-[360px]) */}
+      {/* Slimmer Centered Card Container */}
       <motion.div
         initial={{ opacity: 0, y: 30, scale: 0.95 }}
         animate={{ opacity: 1, y: 0, scale: 1 }}
@@ -49,9 +49,9 @@ END:VCARD`;
         className="w-full max-w-[340px] sm:max-w-[360px] bg-[#0a1630]/95 backdrop-blur-2xl border border-[#162e5c] rounded-[32px] p-6 sm:p-7 relative shadow-[0_0_50px_rgba(0,240,255,0.18)] flex flex-col items-center mt-12 z-10"
       >
         
-        {/* Overhanging Profile Photo with Pure White Ring (No online badge) */}
-        <div className="relative -mt-20 sm:-mt-22 mb-5">
-          <div className="relative w-28 h-28 sm:w-32 sm:h-32 rounded-full overflow-hidden border-4 border-[#040814] ring-4 ring-white shadow-[0_0_30px_rgba(255,255,255,0.35)] bg-slate-900">
+        {/* Overhanging Profile Photo (20% Larger with Thin Cyan Outline) */}
+        <div className="relative -mt-24 sm:-mt-26 mb-5">
+          <div className="relative w-36 h-36 sm:w-40 sm:h-40 rounded-full overflow-hidden border-2 border-[#040814] ring-2 ring-cyan-accent shadow-[0_0_25px_rgba(0,240,255,0.35)] bg-slate-900">
             <Image
               src="/img/maurojas.jpg"
               alt="Mauricio Rojas"
