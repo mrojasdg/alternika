@@ -1,0 +1,8 @@
+{
+  "rewrites": [
+    {
+      "source": "/propuestas/:path*",
+      "destination": "https://origen.alternika.com.mx/propuestas/:path*"
+    }
+  ]
+}
