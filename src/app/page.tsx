@@ -41,9 +41,9 @@ export default function Home() {
             <Image
               src="/img/Alternika_logo.svg"
               alt="Alternika Logo"
-              width={260}
-              height={80}
-              className="h-14 sm:h-16 md:h-20 w-auto object-contain drop-shadow-[0_0_20px_rgba(0,240,255,0.2)]"
+              width={340}
+              height={110}
+              className="h-20 sm:h-24 md:h-28 lg:h-32 w-auto object-contain drop-shadow-[0_0_25px_rgba(0,240,255,0.25)]"
               priority
             />
           </motion.div>
@@ -54,7 +54,7 @@ export default function Home() {
           
           {/* Centered Century Gothic Headline */}
           <div className="mb-6 w-full flex flex-col items-center justify-center text-center">
-            <h1 className="font-display text-3xl sm:text-5xl md:text-6xl lg:text-7xl xl:text-8xl font-black text-white leading-[1.08] tracking-tight space-y-1">
+            <h1 className="font-display text-2xl sm:text-4xl md:text-5xl lg:text-6xl xl:text-7xl font-black text-white leading-[1.08] tracking-tight space-y-1">
               <div className="w-full flex justify-center">
                 <TextReveal
                   text="Construimos marcas."
@@ -79,7 +79,7 @@ export default function Home() {
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.6, delay: 0.4 }}
-            className="text-slate-300 text-xs sm:text-sm md:text-base max-w-3xl mx-auto leading-relaxed mb-8 font-normal text-center px-2"
+            className="text-slate-300 text-xs sm:text-sm max-w-2xl mx-auto leading-relaxed mb-8 font-normal text-center px-2"
           >
             Tu aliado creativo y tecnológico. Fusionamos diseño web, estrategia digital, foto, video y 3D para que tu proyecto destaque en cualquier plataforma, física o digital.
           </motion.p>
