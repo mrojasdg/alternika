@@ -146,6 +146,9 @@ export default function Home() {
         </motion.div>
       </section>
 
+      {/* QUIÉNES SOMOS & DATOS DUROS */}
+      <AboutSection />
+
       {/* SERVICIOS EN ACORDEÓN */}
       <ServicesSection />
 
@@ -193,9 +196,6 @@ export default function Home() {
 
       {/* MARCAS & CLIENTES (LOGOTIPOS) */}
       <ClientsSection />
-
-      {/* QUIÉNES SOMOS & DATOS DUROS */}
-      <AboutSection />
     </div>
   );
 }
