@@ -22,6 +22,8 @@ import {
   LogOut,
   AlertCircle,
   CheckCircle2,
+  Star,
+  Link2,
 } from "lucide-react";
 import { DynamicQR } from "@/lib/supabase";
 import { downloadQRJpg } from "@/lib/qr-image";
@@ -47,8 +49,10 @@ export default function QRStudioPage() {
   const [isSupabaseModalOpen, setIsSupabaseModalOpen] = useState<boolean>(false);
 
   // Form states
+  const [createTab, setCreateTab] = useState<"url" | "placeId">("url");
   const [formBusiness, setFormBusiness] = useState<string>("");
   const [formUrl, setFormUrl] = useState<string>("");
+  const [formPlaceId, setFormPlaceId] = useState<string>("");
   const [formCode, setFormCode] = useState<string>("");
   const [editingQR, setEditingQR] = useState<DynamicQR | null>(null);
   const [saving, setSaving] = useState<boolean>(false);
@@ -56,6 +60,7 @@ export default function QRStudioPage() {
   // Feedback states
   const [copiedId, setCopiedId] = useState<string | null>(null);
   const [downloadingId, setDownloadingId] = useState<string | null>(null);
+  const [createdToast, setCreatedToast] = useState<{ code: string; url: string } | null>(null);
 
   // Previews
   const [previewDataUrl, setPreviewDataUrl] = useState<string>("");
@@ -156,16 +161,30 @@ export default function QRStudioPage() {
     }
   };
 
-  const openCreateModal = () => {
+  const openCreateModal = (tab: "url" | "placeId" = "url") => {
+    setCreateTab(tab);
     setFormBusiness("");
     setFormUrl("");
+    setFormPlaceId("");
     setFormCode(nextCode);
     setIsCreateOpen(true);
   };
 
   const handleCreateSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (!formBusiness || !formUrl) return;
+    if (!formBusiness) return;
+
+    let targetUrl = formUrl.trim();
+    if (createTab === "placeId") {
+      const cleanPlaceId = formPlaceId.trim().replace(/\s+/g, "");
+      if (!cleanPlaceId) {
+        alert("Por favor ingresa un Google Place ID válido.");
+        return;
+      }
+      targetUrl = `https://search.google.com/local/writereview?placeid=${cleanPlaceId}`;
+    }
+
+    if (!targetUrl) return;
 
     setSaving(true);
     try {
@@ -177,12 +196,24 @@ export default function QRStudioPage() {
         },
         body: JSON.stringify({
           business_name: formBusiness,
-          destination_url: formUrl,
+          destination_url: targetUrl,
           code: formCode || nextCode,
         }),
       });
 
       if (res.ok) {
+        const data = await res.json();
+        const createdCode = data.qr?.code || (formCode || nextCode).toUpperCase();
+        const redirectShortUrl = `${originUrl}/r/${createdCode}`;
+
+        // Auto copy short link to clipboard
+        try {
+          await navigator.clipboard.writeText(redirectShortUrl);
+        } catch {}
+
+        setCreatedToast({ code: createdCode, url: redirectShortUrl });
+        setTimeout(() => setCreatedToast(null), 8000);
+
         setIsCreateOpen(false);
         fetchQRs();
       } else {
@@ -448,6 +479,45 @@ export default function QRStudioPage() {
           </div>
         </div>
 
+        {/* Created Success Toast Banner */}
+        {createdToast && (
+          <div className="bg-emerald-950/90 border border-emerald-500/50 rounded-2xl p-4 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 shadow-[0_0_35px_rgba(16,185,129,0.25)]">
+            <div className="flex items-center gap-3">
+              <div className="w-10 h-10 rounded-xl bg-emerald-500/20 text-emerald-400 flex items-center justify-center shrink-0">
+                <CheckCircle2 className="w-5 h-5" />
+              </div>
+              <div>
+                <div className="text-xs font-bold text-white flex items-center gap-2">
+                  <span>¡Código QR</span>
+                  <span className="font-mono bg-emerald-500/20 text-emerald-300 px-2 py-0.5 rounded text-xs">
+                    {createdToast.code}
+                  </span>
+                  <span>creado exitosamente!</span>
+                </div>
+                <div className="text-[11px] text-emerald-300/90 flex flex-wrap items-center gap-1.5 mt-0.5">
+                  <span>Link copiado al portapapeles:</span>
+                  <span className="font-mono text-white underline select-all">{createdToast.url}</span>
+                </div>
+              </div>
+            </div>
+            <div className="flex items-center gap-2 w-full sm:w-auto justify-end">
+              <button
+                onClick={() => copyToClipboard(createdToast.url, "toast")}
+                className="px-3.5 py-1.5 rounded-xl bg-emerald-500 text-slate-950 text-xs font-bold hover:bg-emerald-400 transition-colors flex items-center gap-1.5 shadow-md"
+              >
+                <Copy className="w-3.5 h-3.5" />
+                <span>{copiedId === "toast" ? "¡Copiado de nuevo!" : "Copiar Link"}</span>
+              </button>
+              <button
+                onClick={() => setCreatedToast(null)}
+                className="p-1.5 text-slate-400 hover:text-white transition-colors text-xs"
+              >
+                ✕
+              </button>
+            </div>
+          </div>
+        )}
+
         {/* Metrics Row */}
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
           <div className="bg-[#081226]/80 border border-slate-800/80 rounded-2xl p-5 relative overflow-hidden">
@@ -500,16 +570,25 @@ export default function QRStudioPage() {
                 Acción Rápida
               </div>
               <p className="text-xs text-slate-300">
-                Genera un nuevo QR con código consecutivo automático.
+                Genera un nuevo QR dinámico listo para imprimir.
               </p>
             </div>
-            <button
-              onClick={openCreateModal}
-              className="mt-3 w-full py-2.5 px-4 rounded-xl bg-cyan-accent hover:bg-cyan-hover text-slate-950 font-bold text-xs transition-all shadow-[0_0_20px_rgba(0,240,255,0.35)] flex items-center justify-center gap-2"
-            >
-              <Plus className="w-4 h-4" />
-              <span>Crear Nuevo QR</span>
-            </button>
+            <div className="mt-3 flex flex-col gap-2">
+              <button
+                onClick={() => openCreateModal("url")}
+                className="w-full py-2 px-3 rounded-xl bg-cyan-accent hover:bg-cyan-hover text-slate-950 font-bold text-xs transition-all shadow-[0_0_15px_rgba(0,240,255,0.3)] flex items-center justify-center gap-1.5"
+              >
+                <Plus className="w-3.5 h-3.5" />
+                <span>Nuevo QR (URL)</span>
+              </button>
+              <button
+                onClick={() => openCreateModal("placeId")}
+                className="w-full py-2 px-3 rounded-xl bg-amber-400/15 border border-amber-400/40 hover:bg-amber-400 hover:text-slate-950 text-amber-300 font-bold text-xs transition-all flex items-center justify-center gap-1.5"
+              >
+                <Star className="w-3.5 h-3.5 fill-current" />
+                <span>QR Google Reviews</span>
+              </button>
+            </div>
           </div>
         </div>
 
@@ -550,7 +629,7 @@ export default function QRStudioPage() {
                 : "Aún no has creado ningún código QR dinámico. Comienza creando el primero."}
             </p>
             <button
-              onClick={openCreateModal}
+              onClick={() => openCreateModal("url")}
               className="inline-flex items-center gap-2 px-6 py-2.5 rounded-full bg-cyan-accent text-slate-950 font-bold text-xs hover:bg-cyan-hover transition-colors"
             >
               <Plus className="w-4 h-4" />
@@ -718,6 +797,43 @@ export default function QRStudioPage() {
               </button>
             </div>
 
+            {/* Tab Selector: URL Libre vs Google Reviews Place ID */}
+            <div className="flex items-center gap-2 p-1 bg-[#050c1c] border border-slate-800 rounded-xl mb-4">
+              <button
+                type="button"
+                onClick={() => {
+                  setCreateTab("url");
+                  setFormUrl("");
+                }}
+                className={`flex-1 py-2 px-3 rounded-lg text-xs font-bold transition-all flex items-center justify-center gap-2 ${
+                  createTab === "url"
+                    ? "bg-cyan-accent text-slate-950 shadow-md"
+                    : "text-slate-400 hover:text-white"
+                }`}
+              >
+                <Link2 className="w-3.5 h-3.5" />
+                <span>Enlace Libre / Directo</span>
+              </button>
+
+              <button
+                type="button"
+                onClick={() => {
+                  setCreateTab("placeId");
+                  if (formPlaceId) {
+                    setFormUrl(`https://search.google.com/local/writereview?placeid=${formPlaceId}`);
+                  }
+                }}
+                className={`flex-1 py-2 px-3 rounded-lg text-xs font-bold transition-all flex items-center justify-center gap-2 ${
+                  createTab === "placeId"
+                    ? "bg-amber-400 text-slate-950 shadow-md"
+                    : "text-slate-400 hover:text-amber-300"
+                }`}
+              >
+                <Star className="w-3.5 h-3.5 fill-current" />
+                <span>Google Reviews (Place ID)</span>
+              </button>
+            </div>
+
             <form onSubmit={handleCreateSubmit} className="space-y-4">
               <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
                 <div className="sm:col-span-2">
@@ -729,7 +845,7 @@ export default function QRStudioPage() {
                     required
                     value={formBusiness}
                     onChange={(e) => setFormBusiness(e.target.value)}
-                    placeholder="Ej. Menú Terraza, Tarjeta Mauro, Hot Sale..."
+                    placeholder={createTab === "placeId" ? "Ej. Restaurante La Terraza - Reseñas" : "Ej. Menú Terraza, Tarjeta Mauro, Hot Sale..."}
                     className="w-full bg-[#050c1c] border border-slate-700 rounded-xl px-3.5 py-2.5 text-xs text-white placeholder-slate-500 focus:outline-none focus:border-cyan-accent"
                   />
                 </div>
@@ -749,52 +865,86 @@ export default function QRStudioPage() {
                 </div>
               </div>
 
-              <div>
-                <label className="block text-xs font-semibold uppercase tracking-wider text-slate-400 mb-1.5">
-                  Link de Destino Final (Hacia donde apunta) *
-                </label>
-                <input
-                  type="text"
-                  required
-                  value={formUrl}
-                  onChange={(e) => setFormUrl(e.target.value)}
-                  placeholder="https://instagram.com/..., https://misitio.com/menu"
-                  className="w-full bg-[#050c1c] border border-slate-700 rounded-xl px-3.5 py-2.5 text-xs text-white placeholder-slate-500 focus:outline-none focus:border-cyan-accent"
-                />
-                <p className="text-[11px] text-slate-500 mt-1">
-                  Podrás editar este enlace en cualquier momento sin que cambie el QR impreso.
-                </p>
-              </div>
+              {createTab === "url" ? (
+                <div>
+                  <label className="block text-xs font-semibold uppercase tracking-wider text-slate-400 mb-1.5">
+                    Link de Destino Final (Hacia donde apunta) *
+                  </label>
+                  <input
+                    type="text"
+                    required
+                    value={formUrl}
+                    onChange={(e) => setFormUrl(e.target.value)}
+                    placeholder="https://instagram.com/..., https://misitio.com/menu"
+                    className="w-full bg-[#050c1c] border border-slate-700 rounded-xl px-3.5 py-2.5 text-xs text-white placeholder-slate-500 focus:outline-none focus:border-cyan-accent"
+                  />
+                  <p className="text-[11px] text-slate-500 mt-1">
+                    Podrás editar este enlace en cualquier momento sin que cambie el QR impreso.
+                  </p>
+                </div>
+              ) : (
+                <div className="space-y-2">
+                  <div>
+                    <label className="block text-xs font-semibold uppercase tracking-wider text-amber-300 mb-1.5 flex items-center gap-1.5">
+                      <Star className="w-3.5 h-3.5 fill-current" />
+                      <span>Google Place ID del Negocio *</span>
+                    </label>
+                    <input
+                      type="text"
+                      required
+                      value={formPlaceId}
+                      onChange={(e) => {
+                        // Sanitize input: remove all spaces, tabs, linebreaks
+                        const clean = e.target.value.trim().replace(/\s+/g, "");
+                        setFormPlaceId(clean);
+                        setFormUrl(clean ? `https://search.google.com/local/writereview?placeid=${clean}` : "");
+                      }}
+                      placeholder="Ej. ChIJN1t_tDeuEmsRUsoyG83frY4"
+                      className="w-full bg-[#050c1c] border border-amber-500/50 rounded-xl px-3.5 py-2.5 text-xs text-amber-200 font-mono placeholder-slate-500 focus:outline-none focus:border-amber-400 focus:ring-1 focus:ring-amber-400"
+                    />
+                    <p className="text-[11px] text-slate-400 mt-1">
+                      Espacios en blanco se eliminan automáticamente. Al escanear, abrirá la ventana directa de 5 estrellas en Google Maps.
+                    </p>
+                  </div>
 
-              {/* Live Preview Box with embedded code */}
+                  {/* Auto-constructed URL preview */}
+                  <div className="p-3 bg-[#030712] border border-amber-500/20 rounded-xl">
+                    <div className="text-[10px] uppercase font-bold text-slate-400 mb-1 flex items-center gap-1">
+                      <span>Destino Automático Google Reviews:</span>
+                    </div>
+                    <div className="text-[11px] font-mono text-cyan-accent truncate select-all">
+                      {formPlaceId
+                        ? `https://search.google.com/local/writereview?placeid=${formPlaceId}`
+                        : "https://search.google.com/local/writereview?placeid=..."}
+                    </div>
+                  </div>
+                </div>
+              )}
+
+              {/* Live Preview Box: 100% Square with embedded code at bottom */}
               <div className="bg-[#050c1c] border border-slate-800 rounded-2xl p-4 flex flex-col sm:flex-row items-center gap-4">
                 {previewDataUrl ? (
-                  <div className="bg-white p-2.5 rounded-xl border border-slate-300 shrink-0 text-center shadow-md">
+                  <div className="bg-white p-2 rounded-2xl border border-slate-200 shrink-0 text-center shadow-lg w-28 h-28 flex flex-col justify-between items-center">
                     <img
                       src={previewDataUrl}
                       alt="Preview QR"
-                      className="w-24 h-24 object-contain mx-auto"
+                      className="w-20 h-20 object-contain mx-auto"
                     />
-                    <div className="mt-1 pt-1 border-t border-slate-200">
-                      <div className="text-[10px] font-black text-slate-900 font-mono tracking-wider">
-                        {(formCode || nextCode).toUpperCase()}
-                      </div>
-                      <div className="text-[7px] text-slate-500 uppercase tracking-tight">
-                        ALTERLNK DYNAMIC
-                      </div>
+                    <div className="text-[11px] font-black text-slate-900 font-mono tracking-wider leading-none pb-0.5">
+                      {(formCode || nextCode).toUpperCase()}
                     </div>
                   </div>
                 ) : (
-                  <div className="w-24 h-28 bg-slate-900 rounded-xl flex items-center justify-center text-slate-600">
+                  <div className="w-28 h-28 bg-slate-900 rounded-2xl flex items-center justify-center text-slate-600">
                     <QrCode className="w-8 h-8" />
                   </div>
                 )}
                 <div className="text-xs text-slate-400 space-y-1">
-                  <div className="font-semibold text-white">
-                    Vista previa de la imagen JPG generada
+                  <div className="font-semibold text-white flex items-center gap-1.5">
+                    <span>Imagen 100% Cuadrada (Sin recortes extras)</span>
                   </div>
                   <p className="text-[11px] leading-relaxed">
-                    La imagen se descargará en resolución media con fondo blanco, el QR de alta definición y el código <strong className="text-cyan-accent font-mono">{(formCode || nextCode).toUpperCase()}</strong> impreso en la parte inferior.
+                    La imagen se genera en formato cuadrado 1:1. El código <strong className="text-cyan-accent font-mono">{(formCode || nextCode).toUpperCase()}</strong> viene pegado al borde inferior del QR para identificar el archivo sin marcas innecesarias.
                   </p>
                 </div>
               </div>

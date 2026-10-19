@@ -1,19 +1,25 @@
 import QRCode from "qrcode";
 
 /**
- * Generates a clean, medium-resolution JPG image containing the QR code
- * and the unique identification code (e.g. 2026A1) nicely embedded at the bottom.
+ * Generates a clean, 100% SQUARE (1:1) medium-resolution JPG image (800x800px).
+ * The QR code sits centered with the identification code (e.g. 2026A1) nestled
+ * neatly inside the bottom margin without any extra branding or labels,
+ * completely ready for print and acrylic stands without requiring any cropping.
  */
 export async function generateQRJpgBlob(
   redirectUrl: string,
   code: string
 ): Promise<Blob> {
   const qrCanvas = document.createElement("canvas");
-  
-  // Render high quality QR code
+  const canvasSize = 800; // Perfect square
+  const qrSize = 710;
+  const qrX = (canvasSize - qrSize) / 2; // 45px
+  const qrY = 24;
+
+  // Render sharp QR code
   await QRCode.toCanvas(qrCanvas, redirectUrl, {
-    width: 700,
-    margin: 2,
+    width: qrSize,
+    margin: 1,
     errorCorrectionLevel: "H",
     color: {
       dark: "#000000",
@@ -21,46 +27,29 @@ export async function generateQRJpgBlob(
     },
   });
 
-  // Final canvas with extra room at the bottom for embedded identification text
+  // Final 1:1 square canvas
   const finalCanvas = document.createElement("canvas");
-  const canvasWidth = 700;
-  const bottomPadding = 90;
-  const canvasHeight = canvasWidth + bottomPadding;
-
-  finalCanvas.width = canvasWidth;
-  finalCanvas.height = canvasHeight;
+  finalCanvas.width = canvasSize;
+  finalCanvas.height = canvasSize;
 
   const ctx = finalCanvas.getContext("2d");
   if (!ctx) throw new Error("No se pudo obtener el contexto 2D del canvas");
 
-  // 1. Fill crisp white background
+  // 1. Fill solid crisp white background
   ctx.fillStyle = "#ffffff";
-  ctx.fillRect(0, 0, canvasWidth, canvasHeight);
+  ctx.fillRect(0, 0, canvasSize, canvasSize);
 
   // 2. Draw QR code
-  ctx.drawImage(qrCanvas, 0, 0, canvasWidth, canvasWidth);
+  ctx.drawImage(qrCanvas, qrX, qrY, qrSize, qrSize);
 
-  // 3. Subtle separator line
-  ctx.strokeStyle = "#e2e8f0";
-  ctx.lineWidth = 1;
-  ctx.beginPath();
-  ctx.moveTo(60, canvasWidth + 5);
-  ctx.lineTo(canvasWidth - 60, canvasWidth + 5);
-  ctx.stroke();
-
-  // 4. Embedded Code Text (e.g. 2026A1)
+  // 3. Embedded Code Text (e.g. 2026A1) nestled right below the QR edge
   ctx.fillStyle = "#0f172a";
-  ctx.font = "bold 28px 'Century Gothic', -apple-system, BlinkMacSystemFont, Arial, sans-serif";
+  ctx.font = "bold 22px 'Century Gothic', -apple-system, BlinkMacSystemFont, Arial, sans-serif";
   ctx.textAlign = "center";
   ctx.textBaseline = "middle";
-  ctx.fillText(code.toUpperCase(), canvasWidth / 2, canvasWidth + 38);
+  ctx.fillText(code.toUpperCase(), canvasSize / 2, canvasSize - 32);
 
-  // 5. Small brand / dynamic indicator
-  ctx.fillStyle = "#94a3b8";
-  ctx.font = "500 13px -apple-system, BlinkMacSystemFont, Arial, sans-serif";
-  ctx.fillText("ALTERLNK · DYNAMIC QR", canvasWidth / 2, canvasWidth + 66);
-
-  // Convert to JPEG blob
+  // Convert to JPEG blob at high quality
   return new Promise((resolve, reject) => {
     finalCanvas.toBlob(
       (blob) => {
@@ -68,7 +57,7 @@ export async function generateQRJpgBlob(
         else reject(new Error("Error al generar la imagen JPG del QR"));
       },
       "image/jpeg",
-      0.92
+      0.94
     );
   });
 }
