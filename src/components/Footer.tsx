@@ -7,8 +7,8 @@ import { Instagram, Linkedin, Facebook, Mail, Globe } from "lucide-react";
 export function Footer() {
   const pathname = usePathname();
 
-  // Hide footer completely on digital card route (/maurojas & /maurojas.html)
-  if (pathname?.includes("/maurojas")) {
+  // Hide footer completely on digital card route (/maurojas) and private QR studio (/qr, /r)
+  if (pathname?.includes("/maurojas") || pathname?.startsWith("/qr") || pathname?.startsWith("/r")) {
     return null;
   }
 
