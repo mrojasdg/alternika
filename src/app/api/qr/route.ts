@@ -11,6 +11,7 @@ import { verifySessionToken } from "@/lib/auth";
 
 export const dynamic = "force-dynamic";
 export const revalidate = 0;
+export const fetchCache = "force-no-store";
 
 function isAuthorized(req: NextRequest): boolean {
   const cookieToken = req.cookies.get("alternika_qr_session")?.value;

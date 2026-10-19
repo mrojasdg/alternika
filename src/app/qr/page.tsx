@@ -81,6 +81,7 @@ export default function QRStudioPage() {
   const [copiedId, setCopiedId] = useState<string | null>(null);
   const [downloadingId, setDownloadingId] = useState<string | null>(null);
   const [createdToast, setCreatedToast] = useState<{ code: string; url: string } | null>(null);
+  const [updatedToast, setUpdatedToast] = useState<{ code: string; url: string; destination: string } | null>(null);
 
   // Previews
   const [previewDataUrl, setPreviewDataUrl] = useState<string>("");
@@ -293,6 +294,12 @@ export default function QRStudioPage() {
           setQrs((prev) =>
             prev.map((item) => (item.id === data.qr.id ? data.qr : item))
           );
+          setUpdatedToast({
+            code: data.qr.code,
+            url: `${originUrl}/r/${data.qr.code}`,
+            destination: data.qr.destination_url,
+          });
+          setTimeout(() => setUpdatedToast(null), 10000);
         }
         setIsEditOpen(false);
         setEditingQR(null);
@@ -554,6 +561,56 @@ export default function QRStudioPage() {
           </div>
         )}
 
+        {/* Success Toast: QR Actualizado */}
+        {updatedToast && (
+          <div className="bg-cyan-950/90 border border-cyan-500/50 rounded-2xl p-4 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 shadow-[0_0_35px_rgba(0,240,255,0.25)] animate-in fade-in slide-in-from-top-2 duration-300">
+            <div className="flex items-center gap-3">
+              <div className="w-10 h-10 rounded-xl bg-cyan-500/20 text-cyan-400 flex items-center justify-center shrink-0">
+                <CheckCircle2 className="w-5 h-5" />
+              </div>
+              <div>
+                <div className="text-xs font-bold text-white flex items-center gap-2">
+                  <span>¡Código QR</span>
+                  <span className="font-mono bg-cyan-500/20 text-cyan-300 px-2 py-0.5 rounded text-xs">
+                    {updatedToast.code}
+                  </span>
+                  <span>actualizado con éxito en Supabase!</span>
+                </div>
+                <div className="text-[11px] text-cyan-300/90 flex flex-wrap items-center gap-1.5 mt-0.5">
+                  <span>Nuevo Destino:</span>
+                  <span className="font-mono text-white underline select-all max-w-xs sm:max-w-md truncate">
+                    {updatedToast.destination}
+                  </span>
+                </div>
+              </div>
+            </div>
+            <div className="flex items-center gap-2 w-full sm:w-auto justify-end">
+              <a
+                href={`${updatedToast.url}?t=${Date.now()}`}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="px-3.5 py-1.5 rounded-xl bg-cyan-accent text-slate-950 text-xs font-bold hover:bg-cyan-hover transition-colors flex items-center gap-1.5 shadow-md"
+              >
+                <ExternalLink className="w-3.5 h-3.5" />
+                <span>Probar Redirección</span>
+              </a>
+              <button
+                onClick={() => copyToClipboard(updatedToast.url, "update-toast")}
+                className="px-3.5 py-1.5 rounded-xl bg-slate-800 text-slate-200 text-xs font-semibold hover:text-white transition-colors flex items-center gap-1.5"
+              >
+                <Copy className="w-3.5 h-3.5" />
+                <span>{copiedId === "update-toast" ? "¡Copiado!" : "Copiar"}</span>
+              </button>
+              <button
+                onClick={() => setUpdatedToast(null)}
+                className="p-1.5 text-slate-400 hover:text-white transition-colors text-xs"
+              >
+                ✕
+              </button>
+            </div>
+          </div>
+        )}
+
         {/* Metrics Row */}
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
           <div className="bg-[#081226]/80 border border-slate-800/80 rounded-2xl p-5 relative overflow-hidden">
@@ -722,22 +779,34 @@ export default function QRStudioPage() {
                         <span className="font-semibold uppercase tracking-wider text-[10px] text-cyan-accent">
                           Link Dinámico (En el QR)
                         </span>
-                        <button
-                          onClick={() => copyToClipboard(redirectUrl, qr.id)}
-                          className="hover:text-white transition-colors flex items-center gap-1 text-[10px]"
-                        >
-                          {copiedId === qr.id ? (
-                            <>
-                              <Check className="w-3 h-3 text-emerald-400" />
-                              <span className="text-emerald-400">Copiado</span>
-                            </>
-                          ) : (
-                            <>
-                              <Copy className="w-3 h-3" />
-                              <span>Copiar</span>
-                            </>
-                          )}
-                        </button>
+                        <div className="flex items-center gap-2">
+                          <a
+                            href={`${redirectUrl}?t=${Date.now()}`}
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            className="hover:text-cyan-accent text-slate-400 transition-colors flex items-center gap-1 text-[10px]"
+                            title="Probar redirección en vivo"
+                          >
+                            <ExternalLink className="w-3 h-3" />
+                            <span>Probar</span>
+                          </a>
+                          <button
+                            onClick={() => copyToClipboard(redirectUrl, qr.id)}
+                            className="hover:text-white transition-colors flex items-center gap-1 text-[10px]"
+                          >
+                            {copiedId === qr.id ? (
+                              <>
+                                <Check className="w-3 h-3 text-emerald-400" />
+                                <span className="text-emerald-400">Copiado</span>
+                              </>
+                            ) : (
+                              <>
+                                <Copy className="w-3 h-3" />
+                                <span>Copiar</span>
+                              </>
+                            )}
+                          </button>
+                        </div>
                       </div>
                       <div className="text-xs font-mono text-slate-200 truncate select-all">
                         {redirectUrl}

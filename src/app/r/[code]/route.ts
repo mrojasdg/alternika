@@ -2,6 +2,8 @@ import { NextRequest, NextResponse } from "next/server";
 import { getQRByCode, incrementScanCount } from "@/lib/qr-service";
 
 export const dynamic = "force-dynamic";
+export const revalidate = 0;
+export const fetchCache = "force-no-store";
 
 export async function GET(
   req: NextRequest,
@@ -97,7 +99,10 @@ export async function GET(
         </html>`,
         {
           status: 404,
-          headers: { "Content-Type": "text/html; charset=utf-8" },
+          headers: {
+            "Content-Type": "text/html; charset=utf-8",
+            "Cache-Control": "no-store, no-cache, must-revalidate, max-age=0",
+          },
         }
       );
     }
@@ -111,12 +116,65 @@ export async function GET(
       destination = destination.replace(/placeid=place_?id:/i, "placeid=");
     }
 
-    // Perform redirect with strict anti-caching headers so browser never caches old redirect
-    const response = NextResponse.redirect(destination, 307);
-    response.headers.set("Cache-Control", "no-store, no-cache, must-revalidate, proxy-revalidate, max-age=0, s-maxage=0");
-    response.headers.set("Pragma", "no-cache");
-    response.headers.set("Expires", "0");
-    return response;
+    // Optional raw 307 redirect for API crawlers
+    const isRaw = req.nextUrl.searchParams.get("raw") === "1";
+    if (isRaw) {
+      const response = NextResponse.redirect(destination, 307);
+      response.headers.set("Cache-Control", "no-store, no-cache, must-revalidate, proxy-revalidate, max-age=0, s-maxage=0");
+      response.headers.set("CDN-Cache-Control", "no-store");
+      response.headers.set("Vercel-CDN-Cache-Control", "no-store");
+      response.headers.set("Pragma", "no-cache");
+      response.headers.set("Expires", "0");
+      return response;
+    }
+
+    // Return HTTP 200 with instant client-side redirect (meta refresh + location.replace).
+    // Using HTTP 200 completely prevents iOS Safari, Chrome, and mobile camera scanners
+    // from storing a persistent 301/302/307 redirect in their browser redirect cache.
+    // Every scan/visit fetches a fresh HTML response with the latest Supabase URL.
+    return new NextResponse(
+      `<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <meta http-equiv="Cache-Control" content="no-store, no-cache, must-revalidate, max-age=0" />
+  <meta http-equiv="Pragma" content="no-cache" />
+  <meta http-equiv="Expires" content="0" />
+  <meta http-equiv="refresh" content="0;url=${encodeURI(destination)}" />
+  <title>Alternika | Redirigiendo...</title>
+  <script>
+    try {
+      window.location.replace(${JSON.stringify(destination)});
+    } catch (e) {
+      window.location.href = ${JSON.stringify(destination)};
+    }
+  </script>
+</head>
+<body style="background:#040814;color:#e2e8f0;font-family:system-ui,-apple-system,BlinkMacSystemFont,sans-serif;display:flex;align-items:center;justify-content:center;min-height:100vh;margin:0;padding:24px;text-align:center;">
+  <div style="background:#091329;border:1px solid rgba(0,240,255,0.25);border-radius:24px;padding:32px 24px;max-width:380px;box-shadow:0 20px 50px rgba(0,0,0,0.5);">
+    <div style="width:36px;height:36px;border-radius:50%;border:3px solid #00f0ff;border-top-color:transparent;margin:0 auto 16px auto;animation:spin 0.8s linear infinite;"></div>
+    <h2 style="font-size:17px;font-weight:700;color:#ffffff;margin:0 0 6px 0;">Redirigiendo...</h2>
+    <p style="font-size:12px;color:#94a3b8;margin:0 0 16px 0;">Accediendo al enlace de destino...</p>
+    <a href="${destination}" style="display:inline-block;background:#00f0ff;color:#040814;text-decoration:none;font-weight:700;padding:9px 20px;border-radius:9999px;font-size:12px;">Abrir ahora</a>
+  </div>
+  <style>
+    @keyframes spin { to { transform: rotate(360deg); } }
+  </style>
+</body>
+</html>`,
+      {
+        status: 200,
+        headers: {
+          "Content-Type": "text/html; charset=utf-8",
+          "Cache-Control": "private, no-cache, no-store, max-age=0, must-revalidate",
+          "CDN-Cache-Control": "no-store",
+          "Vercel-CDN-Cache-Control": "no-store",
+          "Pragma": "no-cache",
+          "Expires": "0",
+        },
+      }
+    );
   } catch (error) {
     console.error("Error handling QR redirect:", error);
     return NextResponse.redirect(new URL("/", req.url));
