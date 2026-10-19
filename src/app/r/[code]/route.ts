@@ -111,8 +111,12 @@ export async function GET(
       destination = destination.replace(/placeid=place_?id:/i, "placeid=");
     }
 
-    // Perform redirect (307 Temporary Redirect to ensure subsequent visits are not cached by browser)
-    return NextResponse.redirect(destination, 307);
+    // Perform redirect with strict anti-caching headers so browser never caches old redirect
+    const response = NextResponse.redirect(destination, 307);
+    response.headers.set("Cache-Control", "no-store, no-cache, must-revalidate, proxy-revalidate, max-age=0, s-maxage=0");
+    response.headers.set("Pragma", "no-cache");
+    response.headers.set("Expires", "0");
+    return response;
   } catch (error) {
     console.error("Error handling QR redirect:", error);
     return NextResponse.redirect(new URL("/", req.url));

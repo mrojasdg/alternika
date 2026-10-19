@@ -7,8 +7,10 @@ import {
   generateNextCode,
 } from "@/lib/qr-service";
 import { isSupabaseConfigured } from "@/lib/supabase";
-
 import { verifySessionToken } from "@/lib/auth";
+
+export const dynamic = "force-dynamic";
+export const revalidate = 0;
 
 function isAuthorized(req: NextRequest): boolean {
   const cookieToken = req.cookies.get("alternika_qr_session")?.value;
@@ -30,7 +32,7 @@ export async function GET(req: NextRequest) {
   const totalScans = qrs.reduce((acc, curr) => acc + (curr.scan_count || 0), 0);
   const mostScanned = [...qrs].sort((a, b) => (b.scan_count || 0) - (a.scan_count || 0))[0] || null;
 
-  return NextResponse.json({
+  const res = NextResponse.json({
     qrs,
     nextCode,
     stats: {
@@ -40,6 +42,8 @@ export async function GET(req: NextRequest) {
     },
     isSupabase: isSupabaseConfigured(),
   });
+  res.headers.set("Cache-Control", "no-store, no-cache, must-revalidate, max-age=0");
+  return res;
 }
 
 export async function POST(req: NextRequest) {

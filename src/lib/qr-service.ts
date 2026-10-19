@@ -101,7 +101,12 @@ export async function updateQR(
   }
   if (params.destination_url !== undefined) {
     let url = params.destination_url.trim();
-    if (!/^https?:\/\//i.test(url)) {
+    if (/placeid=place_?id:/i.test(url)) {
+      url = url.replace(/placeid=place_?id:/i, "placeid=");
+    } else if (/^place\s*id\s*[:=]/i.test(url) || url.startsWith("ChIJ")) {
+      const clean = url.replace(/^place\s*id\s*[:=]\s*/i, "").replace(/\s+/g, "");
+      url = `https://search.google.com/local/writereview?placeid=${clean}`;
+    } else if (!/^https?:\/\//i.test(url)) {
       url = `https://${url}`;
     }
     updateData.destination_url = url;

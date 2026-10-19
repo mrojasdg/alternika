@@ -160,8 +160,9 @@ export default function QRStudioPage() {
   const fetchQRs = async (token?: string) => {
     setLoading(true);
     try {
-      const res = await fetch("/api/qr", {
+      const res = await fetch(`/api/qr?t=${Date.now()}`, {
         headers: getAuthHeaders(token),
+        cache: "no-store",
       });
       if (res.ok) {
         const data = await res.json();
@@ -260,6 +261,14 @@ export default function QRStudioPage() {
     e.preventDefault();
     if (!editingQR || !formBusiness || !formUrl) return;
 
+    let targetUrl = formUrl.trim();
+    if (/^place\s*id\s*[:=]/i.test(targetUrl) || targetUrl.startsWith("ChIJ")) {
+      const clean = extractCleanPlaceId(targetUrl);
+      targetUrl = `https://search.google.com/local/writereview?placeid=${clean}`;
+    } else if (/placeid=place_?id:/i.test(targetUrl)) {
+      targetUrl = targetUrl.replace(/placeid=place_?id:/i, "placeid=");
+    }
+
     setSaving(true);
     try {
       const res = await fetch("/api/qr", {
@@ -271,13 +280,20 @@ export default function QRStudioPage() {
         body: JSON.stringify({
           id: editingQR.id,
           business_name: formBusiness,
-          destination_url: formUrl,
+          destination_url: targetUrl,
           code: formCode,
           is_active: editingQR.is_active,
         }),
       });
 
       if (res.ok) {
+        const data = await res.json();
+        if (data.qr) {
+          // Immediately update local state in React so the card updates on screen with 0ms delay
+          setQrs((prev) =>
+            prev.map((item) => (item.id === data.qr.id ? data.qr : item))
+          );
+        }
         setIsEditOpen(false);
         setEditingQR(null);
         fetchQRs();
@@ -1065,11 +1081,18 @@ export default function QRStudioPage() {
                   required
                   value={formUrl}
                   onChange={(e) => setFormUrl(e.target.value)}
+                  placeholder="https://misitio.com o Place ID (ej. ChIJ...)"
                   className="w-full bg-[#050c1c] border border-slate-700 rounded-xl px-3.5 py-2.5 text-xs text-white placeholder-slate-500 focus:outline-none focus:border-cyan-accent"
                 />
+                {formUrl && (/^place\s*id\s*[:=]/i.test(formUrl) || formUrl.startsWith("ChIJ")) && (
+                  <div className="text-[11px] text-amber-300 bg-amber-950/50 border border-amber-500/30 rounded-lg p-2 mt-1.5 flex items-center gap-1.5">
+                    <Star className="w-3.5 h-3.5 shrink-0 fill-current text-amber-400" />
+                    <span>Se detectó un Google Place ID. Se transformará automáticamente al link de 5 estrellas de Google Reviews.</span>
+                  </div>
+                )}
                 <p className="text-[11px] text-emerald-400 mt-1 flex items-center gap-1">
                   <CheckCircle2 className="w-3.5 h-3.5" />
-                  Al actualizar este enlace, cualquier persona que escanee el QR será dirigida a esta nueva URL de inmediato.
+                  Al guardar, se actualiza en Supabase y redirigirá de inmediato al nuevo enlace sin caché.
                 </p>
               </div>
 
