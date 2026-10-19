@@ -28,7 +28,6 @@ import { downloadQRJpg } from "@/lib/qr-image";
 import QRCode from "qrcode";
 
 const AUTH_KEY = "alternika_qr_auth_session";
-const PASS_EXPECTED = "Imbera2026$";
 
 export default function QRStudioPage() {
   const [isAuthenticated, setIsAuthenticated] = useState<boolean>(false);
@@ -65,13 +64,25 @@ export default function QRStudioPage() {
 
   // Check auth session
   useEffect(() => {
-    const saved = sessionStorage.getItem(AUTH_KEY);
-    if (saved === PASS_EXPECTED) {
-      setIsAuthenticated(true);
-      fetchQRs(saved);
-    } else {
-      setLoading(false);
-    }
+    const savedToken = sessionStorage.getItem(AUTH_KEY);
+    fetch("/api/qr/auth", {
+      headers: savedToken ? { authorization: `Bearer ${savedToken}` } : {},
+    })
+      .then((res) => res.json())
+      .then((data) => {
+        if (data.authenticated) {
+          setIsAuthenticated(true);
+          fetchQRs(savedToken || undefined);
+        } else {
+          sessionStorage.removeItem(AUTH_KEY);
+          setIsAuthenticated(false);
+          setLoading(false);
+        }
+      })
+      .catch(() => {
+        setIsAuthenticated(false);
+        setLoading(false);
+      });
   }, []);
 
   // Update live preview when creating
@@ -84,29 +95,48 @@ export default function QRStudioPage() {
       .catch(() => {});
   }, [formCode, nextCode, isCreateOpen, originUrl]);
 
-  const handleLogin = (e: React.FormEvent) => {
+  const handleLogin = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (passwordInput === PASS_EXPECTED) {
-      sessionStorage.setItem(AUTH_KEY, passwordInput);
-      setIsAuthenticated(true);
-      setAuthError("");
-      fetchQRs(passwordInput);
-    } else {
-      setAuthError("Contraseña incorrecta. Acceso restringido.");
+    setAuthError("");
+    try {
+      const res = await fetch("/api/qr/auth", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ password: passwordInput }),
+      });
+      const data = await res.json();
+      if (res.ok && data.token) {
+        sessionStorage.setItem(AUTH_KEY, data.token);
+        setIsAuthenticated(true);
+        setPasswordInput("");
+        fetchQRs(data.token);
+      } else {
+        setAuthError(data.error || "Contraseña incorrecta. Acceso restringido.");
+      }
+    } catch {
+      setAuthError("Error de conexión al autenticar.");
     }
   };
 
-  const handleLogout = () => {
+  const handleLogout = async () => {
+    try {
+      await fetch("/api/qr/auth", { method: "DELETE" });
+    } catch {}
     sessionStorage.removeItem(AUTH_KEY);
     setIsAuthenticated(false);
     setPasswordInput("");
   };
 
-  const fetchQRs = async (pass: string = PASS_EXPECTED) => {
+  const getAuthHeaders = (tokenOverride?: string): Record<string, string> => {
+    const token = tokenOverride || sessionStorage.getItem(AUTH_KEY) || "";
+    return token ? { authorization: `Bearer ${token}` } : {};
+  };
+
+  const fetchQRs = async (token?: string) => {
     setLoading(true);
     try {
       const res = await fetch("/api/qr", {
-        headers: { "x-qr-auth": pass },
+        headers: getAuthHeaders(token),
       });
       if (res.ok) {
         const data = await res.json();
@@ -143,7 +173,7 @@ export default function QRStudioPage() {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
-          "x-qr-auth": PASS_EXPECTED,
+          ...getAuthHeaders(),
         },
         body: JSON.stringify({
           business_name: formBusiness,
@@ -185,7 +215,7 @@ export default function QRStudioPage() {
         method: "PUT",
         headers: {
           "Content-Type": "application/json",
-          "x-qr-auth": PASS_EXPECTED,
+          ...getAuthHeaders(),
         },
         body: JSON.stringify({
           id: editingQR.id,
@@ -218,7 +248,7 @@ export default function QRStudioPage() {
         method: "PUT",
         headers: {
           "Content-Type": "application/json",
-          "x-qr-auth": PASS_EXPECTED,
+          ...getAuthHeaders(),
         },
         body: JSON.stringify({
           id: qr.id,
@@ -238,7 +268,7 @@ export default function QRStudioPage() {
     try {
       const res = await fetch(`/api/qr?id=${id}`, {
         method: "DELETE",
-        headers: { "x-qr-auth": PASS_EXPECTED },
+        headers: getAuthHeaders(),
       });
       if (res.ok) fetchQRs();
     } catch (err) {

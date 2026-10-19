@@ -8,15 +8,16 @@ import {
 } from "@/lib/qr-service";
 import { isSupabaseConfigured } from "@/lib/supabase";
 
-const QR_ADMIN_PASSWORD = process.env.QR_ADMIN_PASSWORD || "Imbera2026$";
+import { verifySessionToken } from "@/lib/auth";
 
 function isAuthorized(req: NextRequest): boolean {
+  const cookieToken = req.cookies.get("alternika_qr_session")?.value;
   const authHeader = req.headers.get("x-qr-auth");
+  const bearerToken = req.headers.get("authorization")?.replace("Bearer ", "");
   const queryAuth = req.nextUrl.searchParams.get("auth");
-  return (
-    authHeader === QR_ADMIN_PASSWORD ||
-    queryAuth === QR_ADMIN_PASSWORD
-  );
+
+  const token = authHeader || bearerToken || cookieToken || queryAuth;
+  return verifySessionToken(token);
 }
 
 export async function GET(req: NextRequest) {
