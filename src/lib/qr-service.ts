@@ -1,66 +1,42 @@
-import { supabase, isSupabaseConfigured, DynamicQR } from "./supabase";
+import { supabase, DynamicQR } from "./supabase";
 
-// In-memory fallback storage for when Supabase is not yet connected
-const memoryStore: DynamicQR[] = [
-  {
-    id: "demo-1",
-    code: "2026A1",
-    business_name: "Alternika Demo Card",
-    destination_url: "https://alternika.com.mx/maurojas",
-    scan_count: 14,
-    is_active: true,
-    created_at: new Date(Date.now() - 86400000 * 2).toISOString(),
-    updated_at: new Date().toISOString(),
-  },
-  {
-    id: "demo-2",
-    code: "2026A2",
-    business_name: "Contacto WhatsApp",
-    destination_url: "https://wa.me/525522965764",
-    scan_count: 28,
-    is_active: true,
-    created_at: new Date(Date.now() - 86400000 * 5).toISOString(),
-    updated_at: new Date().toISOString(),
-  },
-];
+/**
+ * 100% Pure Supabase Service Layer
+ * All reads, writes, updates and deletions occur directly in the cloud PostgreSQL database.
+ */
 
 export async function getAllQRs(): Promise<DynamicQR[]> {
-  if (isSupabaseConfigured() && supabase) {
-    const { data, error } = await supabase
-      .from("dynamic_qrs")
-      .select("*")
-      .order("created_at", { ascending: false });
+  const { data, error } = await supabase
+    .from("dynamic_qrs")
+    .select("*")
+    .order("created_at", { ascending: false });
 
-    if (!error && data) {
-      return data as DynamicQR[];
-    }
-    console.error("Supabase error fetching QRs, using memory store:", error);
+  if (error) {
+    console.error("Error fetching QRs from Supabase:", error);
+    throw new Error(`Error Supabase: ${error.message}`);
   }
-  return [...memoryStore].sort(
-    (a, b) => new Date(b.created_at).getTime() - new Date(a.created_at).getTime()
-  );
+
+  return (data || []) as DynamicQR[];
 }
 
 export async function getQRByCode(code: string): Promise<DynamicQR | null> {
   const normalized = code.trim().toUpperCase();
-  if (isSupabaseConfigured() && supabase) {
-    const { data, error } = await supabase
-      .from("dynamic_qrs")
-      .select("*")
-      .eq("code", normalized)
-      .single();
 
-    if (!error && data) {
-      return data as DynamicQR;
-    }
+  const { data, error } = await supabase
+    .from("dynamic_qrs")
+    .select("*")
+    .eq("code", normalized)
+    .maybeSingle();
+
+  if (error) {
+    console.error("Error fetching QR by code from Supabase:", error);
   }
 
-  const found = memoryStore.find((q) => q.code.toUpperCase() === normalized);
-  return found || null;
+  return (data as DynamicQR) || null;
 }
 
 export async function generateNextCode(): Promise<string> {
-  const qrs = await getAllQRs();
+  const qrs = await getAllQRs().catch(() => []);
   const prefix = "2026A";
   let maxNum = 0;
 
@@ -91,40 +67,26 @@ export async function createQR(params: {
     url = `https://${url}`;
   }
 
-  if (isSupabaseConfigured() && supabase) {
-    const { data, error } = await supabase
-      .from("dynamic_qrs")
-      .insert({
-        code,
-        business_name: params.business_name.trim(),
-        destination_url: url,
-        scan_count: 0,
-        is_active: true,
-        created_at: now,
-        updated_at: now,
-      })
-      .select()
-      .single();
+  const { data, error } = await supabase
+    .from("dynamic_qrs")
+    .insert({
+      code,
+      business_name: params.business_name.trim(),
+      destination_url: url,
+      scan_count: 0,
+      is_active: true,
+      created_at: now,
+      updated_at: now,
+    })
+    .select()
+    .single();
 
-    if (!error && data) {
-      return data as DynamicQR;
-    }
-    console.error("Supabase insert error, falling back to memory:", error);
+  if (error) {
+    console.error("Error inserting QR into Supabase:", error);
+    throw new Error(`Error al guardar en Supabase: ${error.message}`);
   }
 
-  const newQR: DynamicQR = {
-    id: `local-${Date.now()}-${Math.random().toString(36).substring(2, 6)}`,
-    code,
-    business_name: params.business_name.trim(),
-    destination_url: url,
-    scan_count: 0,
-    is_active: true,
-    created_at: now,
-    updated_at: now,
-  };
-
-  memoryStore.unshift(newQR);
-  return newQR;
+  return data as DynamicQR;
 }
 
 export async function updateQR(
@@ -151,83 +113,58 @@ export async function updateQR(
     updateData.code = params.code.trim().toUpperCase();
   }
 
-  if (isSupabaseConfigured() && supabase) {
-    const { data, error } = await supabase
-      .from("dynamic_qrs")
-      .update(updateData)
-      .eq("id", id)
-      .select()
-      .single();
+  const { data, error } = await supabase
+    .from("dynamic_qrs")
+    .update(updateData)
+    .eq("id", id)
+    .select()
+    .single();
 
-    if (!error && data) {
-      return data as DynamicQR;
-    }
+  if (error) {
+    console.error("Error updating QR in Supabase:", error);
+    throw new Error(`Error al actualizar en Supabase: ${error.message}`);
   }
 
-  const index = memoryStore.findIndex((q) => q.id === id);
-  if (index !== -1) {
-    memoryStore[index] = {
-      ...memoryStore[index],
-      ...updateData,
-    };
-    return memoryStore[index];
-  }
-
-  return null;
+  return data as DynamicQR;
 }
 
 export async function incrementScanCount(code: string): Promise<number> {
   const normalized = code.trim().toUpperCase();
 
-  if (isSupabaseConfigured() && supabase) {
-    // Try calling the RPC function if available
-    const { error: rpcError } = await supabase.rpc("increment_qr_scan", {
-      target_code: normalized,
-    });
+  // 1. Try atomic RPC function
+  const { error: rpcError } = await supabase.rpc("increment_qr_scan", {
+    target_code: normalized,
+  });
 
-    if (!rpcError) {
-      const qr = await getQRByCode(normalized);
-      return qr?.scan_count || 1;
-    }
-
-    // Fallback: standard select & update
-    const { data: existing } = await supabase
-      .from("dynamic_qrs")
-      .select("scan_count")
-      .eq("code", normalized)
-      .single();
-
-    if (existing) {
-      const newCount = (existing.scan_count || 0) + 1;
-      await supabase
-        .from("dynamic_qrs")
-        .update({ scan_count: newCount, updated_at: new Date().toISOString() })
-        .eq("code", normalized);
-      return newCount;
-    }
+  if (!rpcError) {
+    const qr = await getQRByCode(normalized);
+    return qr?.scan_count || 1;
   }
 
-  const item = memoryStore.find((q) => q.code.toUpperCase() === normalized);
-  if (item) {
-    item.scan_count += 1;
-    item.updated_at = new Date().toISOString();
-    return item.scan_count;
+  // 2. Fallback: Select and update
+  const { data: existing } = await supabase
+    .from("dynamic_qrs")
+    .select("scan_count")
+    .eq("code", normalized)
+    .single();
+
+  if (existing) {
+    const newCount = (existing.scan_count || 0) + 1;
+    await supabase
+      .from("dynamic_qrs")
+      .update({ scan_count: newCount, updated_at: new Date().toISOString() })
+      .eq("code", normalized);
+    return newCount;
   }
 
   return 1;
 }
 
 export async function deleteQR(id: string): Promise<boolean> {
-  if (isSupabaseConfigured() && supabase) {
-    const { error } = await supabase.from("dynamic_qrs").delete().eq("id", id);
-    if (!error) return true;
+  const { error } = await supabase.from("dynamic_qrs").delete().eq("id", id);
+  if (error) {
+    console.error("Error deleting QR from Supabase:", error);
+    throw new Error(`Error al eliminar de Supabase: ${error.message}`);
   }
-
-  const idx = memoryStore.findIndex((q) => q.id === id);
-  if (idx !== -1) {
-    memoryStore.splice(idx, 1);
-    return true;
-  }
-
-  return false;
+  return true;
 }
