@@ -31,6 +31,26 @@ import QRCode from "qrcode";
 
 const AUTH_KEY = "alternika_qr_auth_session";
 
+function extractCleanPlaceId(input: string): string {
+  let val = input.trim();
+  if (val.includes("placeid=") || val.includes("place_id=")) {
+    try {
+      const url = new URL(val);
+      const param = url.searchParams.get("placeid") || url.searchParams.get("place_id");
+      if (param) val = param;
+    } catch {
+      const match = val.match(/place_?id=([^&]+)/i);
+      if (match) val = match[1];
+    }
+  }
+
+  return val
+    .replace(/^place\s*id\s*[:=]\s*/i, "")
+    .replace(/^placeid\s*[:=]\s*/i, "")
+    .replace(/^place_id\s*[:=]\s*/i, "")
+    .replace(/\s+/g, "");
+}
+
 export default function QRStudioPage() {
   const [isAuthenticated, setIsAuthenticated] = useState<boolean>(false);
   const [passwordInput, setPasswordInput] = useState<string>("");
@@ -176,7 +196,7 @@ export default function QRStudioPage() {
 
     let targetUrl = formUrl.trim();
     if (createTab === "placeId") {
-      const cleanPlaceId = formPlaceId.trim().replace(/\s+/g, "");
+      const cleanPlaceId = extractCleanPlaceId(formPlaceId);
       if (!cleanPlaceId) {
         alert("Por favor ingresa un Google Place ID válido.");
         return;
@@ -894,29 +914,55 @@ export default function QRStudioPage() {
                       required
                       value={formPlaceId}
                       onChange={(e) => {
-                        // Sanitize input: remove all spaces, tabs, linebreaks
-                        const clean = e.target.value.trim().replace(/\s+/g, "");
+                        // Sanitize input: automatically remove PlaceID: prefix and all spaces
+                        const clean = extractCleanPlaceId(e.target.value);
                         setFormPlaceId(clean);
                         setFormUrl(clean ? `https://search.google.com/local/writereview?placeid=${clean}` : "");
                       }}
-                      placeholder="Ej. ChIJN1t_tDeuEmsRUsoyG83frY4"
+                      placeholder="Ej. ChIJ8VV-0g8L04URv7MfjGpS-lw"
                       className="w-full bg-[#050c1c] border border-amber-500/50 rounded-xl px-3.5 py-2.5 text-xs text-amber-200 font-mono placeholder-slate-500 focus:outline-none focus:border-amber-400 focus:ring-1 focus:ring-amber-400"
                     />
                     <p className="text-[11px] text-slate-400 mt-1">
-                      Espacios en blanco se eliminan automáticamente. Al escanear, abrirá la ventana directa de 5 estrellas en Google Maps.
+                      Si pegas el texto con &quot;Place ID:&quot; o espacios, el sistema lo limpia automáticamente dejando solo el código.
                     </p>
                   </div>
 
-                  {/* Auto-constructed URL preview */}
-                  <div className="p-3 bg-[#030712] border border-amber-500/20 rounded-xl">
-                    <div className="text-[10px] uppercase font-bold text-slate-400 mb-1 flex items-center gap-1">
-                      <span>Destino Automático Google Reviews:</span>
+                  {/* Auto-constructed URL preview with Copy Button */}
+                  <div className="p-3 bg-[#030712] border border-amber-500/20 rounded-xl flex items-center justify-between gap-3">
+                    <div className="overflow-hidden">
+                      <div className="text-[10px] uppercase font-bold text-slate-400 mb-0.5 flex items-center gap-1">
+                        <span>Destino Automático Google Reviews:</span>
+                      </div>
+                      <div className="text-[11px] font-mono text-cyan-accent truncate select-all">
+                        {formPlaceId
+                          ? `https://search.google.com/local/writereview?placeid=${formPlaceId}`
+                          : "https://search.google.com/local/writereview?placeid=..."}
+                      </div>
                     </div>
-                    <div className="text-[11px] font-mono text-cyan-accent truncate select-all">
-                      {formPlaceId
-                        ? `https://search.google.com/local/writereview?placeid=${formPlaceId}`
-                        : "https://search.google.com/local/writereview?placeid=..."}
-                    </div>
+
+                    {formPlaceId && (
+                      <button
+                        type="button"
+                        onClick={() => {
+                          const target = `https://search.google.com/local/writereview?placeid=${formPlaceId}`;
+                          copyToClipboard(target, "google_url_preview");
+                        }}
+                        className="px-2.5 py-1.5 rounded-lg bg-amber-400/20 hover:bg-amber-400 hover:text-slate-950 text-amber-300 font-bold text-[10px] transition-colors shrink-0 flex items-center gap-1 shadow-sm"
+                        title="Copiar URL directa de Google Reviews"
+                      >
+                        {copiedId === "google_url_preview" ? (
+                          <>
+                            <Check className="w-3 h-3 text-emerald-400" />
+                            <span>¡Copiada!</span>
+                          </>
+                        ) : (
+                          <>
+                            <Copy className="w-3 h-3" />
+                            <span>Copiar URL</span>
+                          </>
+                        )}
+                      </button>
+                    )}
                   </div>
                 </div>
               )}

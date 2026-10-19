@@ -105,8 +105,14 @@ export async function GET(
     // Increment scan count in background or await
     await incrementScanCount(code);
 
+    // Auto-clean destination URL if it accidentally contains PlaceID: or spaces
+    let destination = qr.destination_url.trim();
+    if (/placeid=place_?id:/i.test(destination)) {
+      destination = destination.replace(/placeid=place_?id:/i, "placeid=");
+    }
+
     // Perform redirect (307 Temporary Redirect to ensure subsequent visits are not cached by browser)
-    return NextResponse.redirect(qr.destination_url, 307);
+    return NextResponse.redirect(destination, 307);
   } catch (error) {
     console.error("Error handling QR redirect:", error);
     return NextResponse.redirect(new URL("/", req.url));
