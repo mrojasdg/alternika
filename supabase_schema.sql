@@ -56,3 +56,6 @@ VALUES
   ('2026A1', 'Alternika Digital Card', 'https://alternika.com.mx/maurojas', 14, true),
   ('2026A2', 'WhatsApp Directo Mauro', 'https://wa.me/525522965764', 28, true)
 ON CONFLICT (code) DO NOTHING;
+
+-- 6. Control de soluciones vendidas (opcional si ya creaste la tabla)
+ALTER TABLE public.dynamic_qrs ADD COLUMN IF NOT EXISTS is_sold BOOLEAN DEFAULT FALSE;

@@ -24,6 +24,9 @@ import {
   CheckCircle2,
   Star,
   Link2,
+  RotateCcw,
+  Tag,
+  ShoppingBag,
 } from "lucide-react";
 import { DynamicQR } from "@/lib/supabase";
 import { downloadQRJpg } from "@/lib/qr-image";
@@ -58,10 +61,11 @@ export default function QRStudioPage() {
 
   const [qrs, setQrs] = useState<DynamicQR[]>([]);
   const [nextCode, setNextCode] = useState<string>("2026A1");
-  const [stats, setStats] = useState({ totalQRs: 0, totalScans: 0, mostScanned: null as DynamicQR | null });
+  const [stats, setStats] = useState({ totalQRs: 0, totalSold: 0, totalScans: 0, mostScanned: null as DynamicQR | null });
   const [isSupabase, setIsSupabase] = useState<boolean>(false);
   const [loading, setLoading] = useState<boolean>(true);
   const [searchQuery, setSearchQuery] = useState<string>("");
+  const [statusFilter, setStatusFilter] = useState<"all" | "sold" | "available">("all");
 
   // Modals
   const [isCreateOpen, setIsCreateOpen] = useState<boolean>(false);
@@ -169,7 +173,7 @@ export default function QRStudioPage() {
         const data = await res.json();
         setQrs(data.qrs || []);
         setNextCode(data.nextCode || "2026A1");
-        setStats(data.stats || { totalQRs: 0, totalScans: 0, mostScanned: null });
+        setStats(data.stats || { totalQRs: 0, totalSold: 0, totalScans: 0, mostScanned: null });
         setIsSupabase(data.isSupabase || false);
       } else {
         if (res.status === 401) {
@@ -284,6 +288,7 @@ export default function QRStudioPage() {
           destination_url: targetUrl,
           code: formCode,
           is_active: editingQR.is_active,
+          is_sold: editingQR.is_sold,
         }),
       });
 
@@ -335,6 +340,95 @@ export default function QRStudioPage() {
     }
   };
 
+  const handleToggleSold = async (qr: DynamicQR) => {
+    const newSold = !qr.is_sold;
+    // Optimistic UI update for 0ms delay
+    setQrs((prev) =>
+      prev.map((item) =>
+        item.id === qr.id ? { ...item, is_sold: newSold } : item
+      )
+    );
+    setStats((prev) => ({
+      ...prev,
+      totalSold: Math.max(0, prev.totalSold + (newSold ? 1 : -1)),
+    }));
+
+    try {
+      const res = await fetch("/api/qr", {
+        method: "PUT",
+        headers: {
+          "Content-Type": "application/json",
+          ...getAuthHeaders(),
+        },
+        body: JSON.stringify({
+          id: qr.id,
+          is_sold: newSold,
+        }),
+      });
+
+      if (res.ok) {
+        const data = await res.json();
+        if (data.qr) {
+          setQrs((prev) =>
+            prev.map((item) => (item.id === data.qr.id ? data.qr : item))
+          );
+        }
+      } else {
+        fetchQRs();
+      }
+    } catch (err) {
+      console.error(err);
+      fetchQRs();
+    }
+  };
+
+  const handleResetScans = async (qr: DynamicQR) => {
+    const confirmed = window.confirm(
+      `¿Deseas reiniciar a 0 el contador de escaneos de ${qr.code} (${qr.business_name})?\n\nAl confirmar, el contador comenzará desde cero para este cliente.`
+    );
+    if (!confirmed) return;
+
+    // Optimistic UI update
+    const previousScans = qr.scan_count || 0;
+    setQrs((prev) =>
+      prev.map((item) =>
+        item.id === qr.id ? { ...item, scan_count: 0 } : item
+      )
+    );
+    setStats((prev) => ({
+      ...prev,
+      totalScans: Math.max(0, prev.totalScans - previousScans),
+    }));
+
+    try {
+      const res = await fetch("/api/qr", {
+        method: "PUT",
+        headers: {
+          "Content-Type": "application/json",
+          ...getAuthHeaders(),
+        },
+        body: JSON.stringify({
+          id: qr.id,
+          scan_count: 0,
+        }),
+      });
+
+      if (res.ok) {
+        const data = await res.json();
+        if (data.qr) {
+          setQrs((prev) =>
+            prev.map((item) => (item.id === data.qr.id ? data.qr : item))
+          );
+        }
+      } else {
+        fetchQRs();
+      }
+    } catch (err) {
+      console.error(err);
+      fetchQRs();
+    }
+  };
+
   const handleDelete = async (id: string, code: string) => {
     if (!confirm(`¿Estás seguro de eliminar permanentemente el código QR ${code}?`)) {
       return;
@@ -372,11 +466,16 @@ export default function QRStudioPage() {
   // Filter QRs
   const filteredQrs = qrs.filter((q) => {
     const qLower = searchQuery.toLowerCase();
-    return (
+    const matchesSearch =
       q.code.toLowerCase().includes(qLower) ||
       q.business_name.toLowerCase().includes(qLower) ||
-      q.destination_url.toLowerCase().includes(qLower)
-    );
+      q.destination_url.toLowerCase().includes(qLower);
+
+    if (!matchesSearch) return false;
+
+    if (statusFilter === "sold") return Boolean(q.is_sold);
+    if (statusFilter === "available") return !q.is_sold;
+    return true;
   });
 
   // 1. Password Gated Screen
@@ -612,99 +711,161 @@ export default function QRStudioPage() {
         )}
 
         {/* Metrics Row */}
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
-          <div className="bg-[#081226]/80 border border-slate-800/80 rounded-2xl p-5 relative overflow-hidden">
-            <div className="text-xs font-semibold text-slate-400 uppercase tracking-wider mb-2">
-              Total QRs Creados
-            </div>
-            <div className="text-3xl font-black text-white font-display">
-              {stats.totalQRs}
-            </div>
-            <div className="text-[11px] text-cyan-accent mt-2 flex items-center gap-1 font-medium">
-              <Sparkles className="w-3.5 h-3.5" /> Siguiente sugerido: {nextCode}
-            </div>
-          </div>
+        {(() => {
+          const soldCount = qrs.filter((q) => Boolean(q.is_sold)).length;
+          const availableCount = qrs.length - soldCount;
+          return (
+            <>
+              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-4">
+                <div className="bg-[#081226]/80 border border-slate-800/80 rounded-2xl p-5 relative overflow-hidden">
+                  <div className="text-xs font-semibold text-slate-400 uppercase tracking-wider mb-2">
+                    Total QRs Creados
+                  </div>
+                  <div className="text-3xl font-black text-white font-display">
+                    {stats.totalQRs}
+                  </div>
+                  <div className="text-[11px] text-cyan-accent mt-2 flex items-center gap-1 font-medium">
+                    <Sparkles className="w-3.5 h-3.5" /> Siguiente sugerido: {nextCode}
+                  </div>
+                </div>
 
-          <div className="bg-[#081226]/80 border border-slate-800/80 rounded-2xl p-5 relative overflow-hidden">
-            <div className="text-xs font-semibold text-slate-400 uppercase tracking-wider mb-2">
-              Escaneos Totales
-            </div>
-            <div className="text-3xl font-black text-cyan-accent font-display">
-              {stats.totalScans}
-            </div>
-            <div className="text-[11px] text-slate-400 mt-2">
-              Redirecciones dinámicas ejecutadas
-            </div>
-          </div>
+                <div className="bg-gradient-to-br from-emerald-950/40 via-[#081226]/90 to-[#040814] border border-emerald-500/40 rounded-2xl p-5 relative overflow-hidden shadow-[0_0_25px_rgba(16,185,129,0.12)]">
+                  <div className="text-xs font-semibold text-emerald-400 uppercase tracking-wider mb-2 flex items-center justify-between">
+                    <span>Soluciones Vendidas</span>
+                    <span className="text-[10px] font-bold bg-emerald-500/20 text-emerald-300 border border-emerald-500/40 px-2 py-0.5 rounded-full">
+                      {soldCount > 0 ? `${Math.round((soldCount / (qrs.length || 1)) * 100)}%` : "0%"}
+                    </span>
+                  </div>
+                  <div className="text-3xl font-black text-emerald-400 font-display flex items-baseline gap-2">
+                    <span>{soldCount}</span>
+                    <span className="text-xs text-slate-400 font-normal">/ {qrs.length} colocadas</span>
+                  </div>
+                  <div className="text-[11px] text-slate-300 mt-2 flex items-center gap-1">
+                    <CheckCircle2 className="w-3.5 h-3.5 text-emerald-400" />
+                    <span>{availableCount} {availableCount === 1 ? "disponible" : "disponibles"} para venta</span>
+                  </div>
+                </div>
 
-          <div className="bg-[#081226]/80 border border-slate-800/80 rounded-2xl p-5 relative overflow-hidden">
-            <div className="text-xs font-semibold text-slate-400 uppercase tracking-wider mb-2">
-              QR Más Popular
-            </div>
-            <div className="text-lg font-bold text-white truncate font-display">
-              {stats.mostScanned ? stats.mostScanned.business_name : "Sin registros"}
-            </div>
-            <div className="text-[11px] text-slate-400 mt-1 flex items-center gap-2">
-              {stats.mostScanned && (
-                <>
-                  <span className="font-mono text-cyan-accent font-bold">
-                    {stats.mostScanned.code}
-                  </span>
-                  <span>·</span>
-                  <span>{stats.mostScanned.scan_count} visitas</span>
-                </>
-              )}
-            </div>
-          </div>
+                <div className="bg-[#081226]/80 border border-slate-800/80 rounded-2xl p-5 relative overflow-hidden">
+                  <div className="text-xs font-semibold text-slate-400 uppercase tracking-wider mb-2">
+                    Escaneos Totales
+                  </div>
+                  <div className="text-3xl font-black text-cyan-accent font-display">
+                    {stats.totalScans}
+                  </div>
+                  <div className="text-[11px] text-slate-400 mt-2">
+                    Redirecciones dinámicas ejecutadas
+                  </div>
+                </div>
 
-          <div className="bg-gradient-to-br from-cyan-950/40 via-[#081226]/80 to-[#040814] border border-cyan-500/30 rounded-2xl p-5 flex flex-col justify-between">
-            <div>
-              <div className="text-xs font-semibold text-cyan-300 uppercase tracking-wider mb-1">
-                Acción Rápida
+                <div className="bg-[#081226]/80 border border-slate-800/80 rounded-2xl p-5 relative overflow-hidden">
+                  <div className="text-xs font-semibold text-slate-400 uppercase tracking-wider mb-2">
+                    QR Más Popular
+                  </div>
+                  <div className="text-lg font-bold text-white truncate font-display">
+                    {stats.mostScanned ? stats.mostScanned.business_name : "Sin registros"}
+                  </div>
+                  <div className="text-[11px] text-slate-400 mt-1 flex items-center gap-2">
+                    {stats.mostScanned && (
+                      <>
+                        <span className="font-mono text-cyan-accent font-bold">
+                          {stats.mostScanned.code}
+                        </span>
+                        <span>·</span>
+                        <span>{stats.mostScanned.scan_count} visitas</span>
+                      </>
+                    )}
+                  </div>
+                </div>
+
+                <div className="bg-gradient-to-br from-cyan-950/40 via-[#081226]/80 to-[#040814] border border-cyan-500/30 rounded-2xl p-5 flex flex-col justify-between">
+                  <div>
+                    <div className="text-xs font-semibold text-cyan-300 uppercase tracking-wider mb-1">
+                      Acción Rápida
+                    </div>
+                    <p className="text-xs text-slate-300">
+                      Genera un nuevo QR dinámico listo para imprimir.
+                    </p>
+                  </div>
+                  <div className="mt-3 flex flex-col gap-2">
+                    <button
+                      onClick={() => openCreateModal("url")}
+                      className="w-full py-2 px-3 rounded-xl bg-cyan-accent hover:bg-cyan-hover text-slate-950 font-bold text-xs transition-all shadow-[0_0_15px_rgba(0,240,255,0.3)] flex items-center justify-center gap-1.5"
+                    >
+                      <Plus className="w-3.5 h-3.5" />
+                      <span>Nuevo QR (URL)</span>
+                    </button>
+                    <button
+                      onClick={() => openCreateModal("placeId")}
+                      className="w-full py-2 px-3 rounded-xl bg-amber-400/15 border border-amber-400/40 hover:bg-amber-400 hover:text-slate-950 text-amber-300 font-bold text-xs transition-all flex items-center justify-center gap-1.5"
+                    >
+                      <Star className="w-3.5 h-3.5 fill-current" />
+                      <span>QR Google Reviews</span>
+                    </button>
+                  </div>
+                </div>
               </div>
-              <p className="text-xs text-slate-300">
-                Genera un nuevo QR dinámico listo para imprimir.
-              </p>
-            </div>
-            <div className="mt-3 flex flex-col gap-2">
-              <button
-                onClick={() => openCreateModal("url")}
-                className="w-full py-2 px-3 rounded-xl bg-cyan-accent hover:bg-cyan-hover text-slate-950 font-bold text-xs transition-all shadow-[0_0_15px_rgba(0,240,255,0.3)] flex items-center justify-center gap-1.5"
-              >
-                <Plus className="w-3.5 h-3.5" />
-                <span>Nuevo QR (URL)</span>
-              </button>
-              <button
-                onClick={() => openCreateModal("placeId")}
-                className="w-full py-2 px-3 rounded-xl bg-amber-400/15 border border-amber-400/40 hover:bg-amber-400 hover:text-slate-950 text-amber-300 font-bold text-xs transition-all flex items-center justify-center gap-1.5"
-              >
-                <Star className="w-3.5 h-3.5 fill-current" />
-                <span>QR Google Reviews</span>
-              </button>
-            </div>
-          </div>
-        </div>
 
-        {/* Filter & Search Bar */}
-        <div className="flex flex-col sm:flex-row items-center justify-between gap-4 bg-[#081226]/60 border border-slate-800/80 rounded-2xl p-4">
-          <div className="relative w-full sm:w-80">
-            <Search className="w-4 h-4 text-slate-500 absolute left-3.5 top-1/2 -translate-y-1/2" />
-            <input
-              type="text"
-              value={searchQuery}
-              onChange={(e) => setSearchQuery(e.target.value)}
-              placeholder="Buscar por código, negocio o link..."
-              className="w-full bg-[#050c1c] border border-slate-800 rounded-xl pl-10 pr-4 py-2 text-xs text-white placeholder-slate-500 focus:outline-none focus:border-cyan-accent"
-            />
-          </div>
+              {/* Filter & Search Bar */}
+              <div className="flex flex-col lg:flex-row items-center justify-between gap-4 bg-[#081226]/60 border border-slate-800/80 rounded-2xl p-4">
+                <div className="flex flex-col sm:flex-row items-center gap-3 w-full lg:w-auto flex-1">
+                  <div className="relative w-full sm:w-80">
+                    <Search className="w-4 h-4 text-slate-500 absolute left-3.5 top-1/2 -translate-y-1/2" />
+                    <input
+                      type="text"
+                      value={searchQuery}
+                      onChange={(e) => setSearchQuery(e.target.value)}
+                      placeholder="Buscar por código, negocio o link..."
+                      className="w-full bg-[#050c1c] border border-slate-800 rounded-xl pl-10 pr-4 py-2 text-xs text-white placeholder-slate-500 focus:outline-none focus:border-cyan-accent"
+                    />
+                  </div>
 
-          <div className="flex items-center gap-2 w-full sm:w-auto justify-end">
-            <span className="text-xs text-slate-400">
-              Mostrando <strong className="text-white">{filteredQrs.length}</strong> de{" "}
-              {qrs.length} códigos
-            </span>
-          </div>
-        </div>
+                  {/* Quick Filter Tabs: Todos / Vendidos / Disponibles */}
+                  <div className="flex items-center gap-1.5 bg-[#050c1c] p-1 rounded-xl border border-slate-800 w-full sm:w-auto justify-center sm:justify-start">
+                    <button
+                      onClick={() => setStatusFilter("all")}
+                      className={`px-3 py-1.5 rounded-lg text-xs font-semibold transition-all ${
+                        statusFilter === "all"
+                          ? "bg-cyan-accent text-slate-950 font-bold shadow-sm"
+                          : "text-slate-400 hover:text-white"
+                      }`}
+                    >
+                      Todos ({qrs.length})
+                    </button>
+                    <button
+                      onClick={() => setStatusFilter("sold")}
+                      className={`px-3 py-1.5 rounded-lg text-xs font-semibold transition-all flex items-center gap-1.5 ${
+                        statusFilter === "sold"
+                          ? "bg-emerald-500 text-slate-950 font-bold shadow-sm"
+                          : "text-emerald-400/90 hover:text-emerald-300"
+                      }`}
+                    >
+                      <Check className="w-3.5 h-3.5 stroke-[2.5]" />
+                      <span>Vendidos ({soldCount})</span>
+                    </button>
+                    <button
+                      onClick={() => setStatusFilter("available")}
+                      className={`px-3 py-1.5 rounded-lg text-xs font-semibold transition-all ${
+                        statusFilter === "available"
+                          ? "bg-slate-700 text-white font-bold shadow-sm"
+                          : "text-slate-400 hover:text-white"
+                      }`}
+                    >
+                      Disponibles ({availableCount})
+                    </button>
+                  </div>
+                </div>
+
+                <div className="flex items-center gap-2 w-full lg:w-auto justify-end">
+                  <span className="text-xs text-slate-400">
+                    Mostrando <strong className="text-white">{filteredQrs.length}</strong> de{" "}
+                    {qrs.length} códigos
+                  </span>
+                </div>
+              </div>
+            </>
+          );
+        })()}
 
         {/* List of Dynamic QRs */}
         {loading ? (
@@ -733,21 +894,38 @@ export default function QRStudioPage() {
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
             {filteredQrs.map((qr) => {
               const redirectUrl = `${originUrl}/r/${qr.code}`;
+              const isSold = Boolean(qr.is_sold);
 
               return (
                 <div
                   key={qr.id}
-                  className={`bg-[#081226]/90 border rounded-3xl p-6 flex flex-col justify-between transition-all hover:border-cyan-accent/40 shadow-xl ${
-                    qr.is_active ? "border-slate-800/90" : "border-rose-900/30 opacity-75"
+                  className={`rounded-3xl p-6 flex flex-col justify-between transition-all shadow-xl relative overflow-hidden ${
+                    isSold
+                      ? "bg-gradient-to-br from-[#042116]/95 via-[#071926]/95 to-[#030d1a]/95 border-2 border-emerald-500/60 hover:border-emerald-400 shadow-[0_12px_40px_rgba(16,185,129,0.22)] ring-1 ring-emerald-500/40"
+                      : qr.is_active
+                      ? "bg-[#081226]/90 border border-slate-800/90 hover:border-cyan-accent/40"
+                      : "bg-[#081226]/90 border border-rose-900/30 opacity-75"
                   }`}
                 >
                   <div>
-                    {/* Card Header: Code & Active badge */}
+                    {/* Card Header: Code, Sold Badge & Active toggle */}
                     <div className="flex items-center justify-between mb-4">
                       <div className="flex items-center gap-2">
-                        <span className="font-mono text-sm font-black bg-cyan-accent/15 border border-cyan-accent/30 text-cyan-accent px-3 py-1 rounded-lg tracking-wider">
+                        <span className={`font-mono text-sm font-black px-3 py-1 rounded-lg tracking-wider border ${
+                          isSold
+                            ? "bg-emerald-500/20 border-emerald-500/40 text-emerald-300 shadow-[0_0_15px_rgba(16,185,129,0.2)]"
+                            : "bg-cyan-accent/15 border-cyan-accent/30 text-cyan-accent"
+                        }`}>
                           {qr.code}
                         </span>
+
+                        {isSold && (
+                          <span className="text-[10px] font-black uppercase tracking-wider bg-emerald-500/25 text-emerald-300 border border-emerald-500/50 px-2.5 py-1 rounded-full flex items-center gap-1 shadow-sm">
+                            <CheckCircle2 className="w-3 h-3 text-emerald-400" />
+                            <span>VENDIDO</span>
+                          </span>
+                        )}
+
                         <button
                           onClick={() => handleToggleActive(qr)}
                           className={`text-[10px] font-bold px-2 py-0.5 rounded-full uppercase transition-colors ${
@@ -761,17 +939,55 @@ export default function QRStudioPage() {
                         </button>
                       </div>
 
-                      {/* Scans Pill */}
-                      <div className="flex items-center gap-1.5 text-xs font-bold text-slate-300 bg-[#050c1c] border border-slate-800 px-2.5 py-1 rounded-full">
-                        <Eye className="w-3.5 h-3.5 text-cyan-accent" />
-                        <span>{qr.scan_count} {qr.scan_count === 1 ? "scan" : "scans"}</span>
+                      {/* Scans Pill with Reset button */}
+                      <div className="flex items-center gap-1">
+                        <div className={`flex items-center gap-1.5 text-xs font-bold bg-[#050c1c] border px-2.5 py-1 rounded-full ${
+                          isSold ? "text-emerald-300 border-emerald-500/40" : "text-slate-300 border-slate-800"
+                        }`}>
+                          <Eye className={`w-3.5 h-3.5 ${isSold ? "text-emerald-400" : "text-cyan-accent"}`} />
+                          <span>{qr.scan_count} {qr.scan_count === 1 ? "scan" : "scans"}</span>
+                        </div>
+                        <button
+                          onClick={() => handleResetScans(qr)}
+                          className="p-1.5 rounded-full bg-[#050c1c] border border-slate-800 text-slate-400 hover:text-amber-400 hover:border-amber-500/40 transition-colors"
+                          title="Resetear contador de scans a 0 (ideal al entregar la solución al negocio)"
+                        >
+                          <RotateCcw className="w-3 h-3" />
+                        </button>
                       </div>
                     </div>
 
                     {/* Business Name */}
-                    <h3 className="text-base font-bold text-white mb-2 line-clamp-1 font-display">
-                      {qr.business_name}
-                    </h3>
+                    <div className="flex items-start justify-between gap-2 mb-2">
+                      <h3 className="text-base font-bold text-white line-clamp-1 font-display">
+                        {qr.business_name}
+                      </h3>
+                    </div>
+
+                    {/* Quick Button: Marcar / Desmarcar Vendido */}
+                    <div className="mb-3">
+                      <button
+                        onClick={() => handleToggleSold(qr)}
+                        className={`w-full py-1.5 px-3 rounded-xl text-xs font-bold transition-all flex items-center justify-center gap-1.5 border shadow-sm ${
+                          isSold
+                            ? "bg-emerald-500/20 hover:bg-emerald-500/30 border-emerald-500/50 text-emerald-300 hover:border-emerald-400"
+                            : "bg-[#050c1c] hover:bg-emerald-950/60 text-slate-400 hover:text-emerald-300 border-slate-800 hover:border-emerald-500/40"
+                        }`}
+                        title={isSold ? "Haz clic para desmarcar y volver a Disponible" : "Haz clic para marcar esta solución como Vendida"}
+                      >
+                        {isSold ? (
+                          <>
+                            <CheckCircle2 className="w-3.5 h-3.5 text-emerald-400" />
+                            <span>Solución Vendida (Clic para desmarcar)</span>
+                          </>
+                        ) : (
+                          <>
+                            <Tag className="w-3.5 h-3.5 text-slate-400" />
+                            <span>Marcar como Vendido</span>
+                          </>
+                        )}
+                      </button>
+                    </div>
 
                     {/* Internal Redirect Link Box */}
                     <div className="mb-3 bg-[#050c1c] border border-slate-800/80 rounded-xl p-2.5">

@@ -5,6 +5,23 @@ import { supabase, DynamicQR } from "./supabase";
  * All reads, writes, updates and deletions occur directly in the cloud PostgreSQL database.
  */
 
+export function normalizeQR(row: any): DynamicQR {
+  if (!row) return row;
+  const rawName = typeof row.business_name === "string" ? row.business_name : "";
+  const isSoldByTag = rawName.includes("[VENDIDO]") || rawName.includes("<!--sold-->");
+  const is_sold = row.is_sold !== undefined && row.is_sold !== null ? Boolean(row.is_sold) : isSoldByTag;
+  const cleanName = rawName
+    .replace(/\s*\[VENDIDO\]\s*/gi, "")
+    .replace(/<!--sold-->/gi, "")
+    .trim();
+
+  return {
+    ...row,
+    business_name: cleanName || rawName,
+    is_sold,
+  };
+}
+
 export async function getAllQRs(): Promise<DynamicQR[]> {
   const { data, error } = await supabase
     .from("dynamic_qrs")
@@ -16,7 +33,7 @@ export async function getAllQRs(): Promise<DynamicQR[]> {
     throw new Error(`Error Supabase: ${error.message}`);
   }
 
-  return (data || []) as DynamicQR[];
+  return (data || []).map(normalizeQR);
 }
 
 export async function getQRByCode(code: string): Promise<DynamicQR | null> {
@@ -32,7 +49,7 @@ export async function getQRByCode(code: string): Promise<DynamicQR | null> {
     console.error("Error fetching QR by code from Supabase:", error);
   }
 
-  return (data as DynamicQR) || null;
+  return data ? normalizeQR(data) : null;
 }
 
 export async function generateNextCode(): Promise<string> {
@@ -91,7 +108,7 @@ export async function createQR(params: {
 
 export async function updateQR(
   id: string,
-  params: Partial<Pick<DynamicQR, "business_name" | "destination_url" | "is_active" | "code">>
+  params: Partial<Pick<DynamicQR, "business_name" | "destination_url" | "is_active" | "code" | "scan_count" | "is_sold">>
 ): Promise<DynamicQR | null> {
   const now = new Date().toISOString();
   const updateData: any = { updated_at: now };
@@ -114,23 +131,62 @@ export async function updateQR(
   if (params.is_active !== undefined) {
     updateData.is_active = params.is_active;
   }
+  if (params.scan_count !== undefined) {
+    updateData.scan_count = params.scan_count;
+  }
   if (params.code !== undefined) {
     updateData.code = params.code.trim().toUpperCase();
   }
 
-  const { data, error } = await supabase
+  // 1. Try update with is_sold column directly
+  const updateWithSold: any = { ...updateData };
+  if (params.is_sold !== undefined) {
+    updateWithSold.is_sold = params.is_sold;
+  }
+
+  let { data, error } = await supabase
     .from("dynamic_qrs")
-    .update(updateData)
+    .update(updateWithSold)
     .eq("id", id)
     .select()
     .single();
 
-  if (error) {
+  // 2. If is_sold column does not exist yet in public.dynamic_qrs, fall back to encoding [VENDIDO] in business_name
+  if (error && (error.code === "PGRST204" || error.message?.includes("is_sold"))) {
+    const updateWithoutSold = { ...updateData };
+
+    if (params.is_sold !== undefined) {
+      let bName: string = params.business_name || "";
+      if (!bName) {
+        const { data: curr } = await supabase
+          .from("dynamic_qrs")
+          .select("business_name")
+          .eq("id", id)
+          .single();
+        bName = curr?.business_name || "";
+      }
+      const cleanBName = bName.replace(/\s*\[VENDIDO\]\s*/gi, "").replace(/<!--sold-->/gi, "").trim();
+      updateWithoutSold.business_name = params.is_sold ? `${cleanBName} [VENDIDO]` : cleanBName;
+    }
+
+    const fallbackRes = await supabase
+      .from("dynamic_qrs")
+      .update(updateWithoutSold)
+      .eq("id", id)
+      .select()
+      .single();
+
+    if (fallbackRes.error) {
+      console.error("Error updating QR fallback in Supabase:", fallbackRes.error);
+      throw new Error(`Error al actualizar en Supabase: ${fallbackRes.error.message}`);
+    }
+    data = fallbackRes.data;
+  } else if (error) {
     console.error("Error updating QR in Supabase:", error);
     throw new Error(`Error al actualizar en Supabase: ${error.message}`);
   }
 
-  return data as DynamicQR;
+  return normalizeQR(data);
 }
 
 export async function incrementScanCount(code: string): Promise<number> {

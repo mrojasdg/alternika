@@ -31,6 +31,7 @@ export async function GET(req: NextRequest) {
   const qrs = await getAllQRs();
   const nextCode = await generateNextCode();
   const totalScans = qrs.reduce((acc, curr) => acc + (curr.scan_count || 0), 0);
+  const totalSold = qrs.filter((q) => Boolean(q.is_sold)).length;
   const mostScanned = [...qrs].sort((a, b) => (b.scan_count || 0) - (a.scan_count || 0))[0] || null;
 
   const res = NextResponse.json({
@@ -38,6 +39,7 @@ export async function GET(req: NextRequest) {
     nextCode,
     stats: {
       totalQRs: qrs.length,
+      totalSold,
       totalScans,
       mostScanned,
     },
@@ -85,7 +87,7 @@ export async function PUT(req: NextRequest) {
 
   try {
     const body = await req.json();
-    const { id, business_name, destination_url, is_active, code } = body;
+    const { id, business_name, destination_url, is_active, code, scan_count, is_sold } = body;
 
     if (!id) {
       return NextResponse.json(
@@ -99,6 +101,8 @@ export async function PUT(req: NextRequest) {
       destination_url,
       is_active,
       code,
+      scan_count,
+      is_sold,
     });
 
     if (!updated) {
