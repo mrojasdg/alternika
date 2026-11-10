@@ -1,19 +1,110 @@
 "use client";
 
-import { useState } from "react";
-import { motion, AnimatePresence } from "framer-motion";
-import { SERVICES } from "@/data/projects";
+import { motion } from "framer-motion";
 import { TextReveal } from "./TextReveal";
-import { CheckCircle2, ChevronDown, ArrowUpRight } from "lucide-react";
+import { ArrowUpRight, Globe, Palette, Box, Share2, Camera, Layers } from "lucide-react";
 import Link from "next/link";
 
+const SERVICES_CARDS = [
+  {
+    id: "web",
+    category: "DIGITAL & APPS",
+    title: "UI/UX & Desarrollo Web",
+    description: "Sistemas de diseño, prototipado interactivo en Figma, diseño web enfocado a conversión y plataformas modernas en Next.js y WordPress.",
+    tags: "Figma · HTML5 · Web",
+    icon: Globe,
+    theme: {
+      badgeBg: "bg-cyan-accent/15",
+      badgeBorder: "border-cyan-accent/30",
+      badgeText: "text-cyan-accent",
+      borderHover: "hover:border-cyan-400/60",
+      glow: "hover:shadow-[0_15px_35px_rgba(0,240,255,0.18)]",
+      footerText: "text-cyan-accent"
+    }
+  },
+  {
+    id: "branding",
+    category: "IDENTIDAD",
+    title: "Branding & Diseño Editorial",
+    description: "Construcción integral de marcas: diseño de logotipo, manuales normativos, empaques, catálogos comerciales y supervisión de imprenta.",
+    tags: "InDesign · Illustrator",
+    icon: Palette,
+    theme: {
+      badgeBg: "bg-purple-500/15",
+      badgeBorder: "border-purple-500/30",
+      badgeText: "text-purple-400",
+      borderHover: "hover:border-purple-400/60",
+      glow: "hover:shadow-[0_15px_35px_rgba(168,85,247,0.18)]",
+      footerText: "text-purple-400"
+    }
+  },
+  {
+    id: "3d",
+    category: "AUDIOVISUAL",
+    title: "Modelado 3D & Motion",
+    description: "Animaciones técnicas 3D, simulaciones industriales, renders fotorrealistas y video corporativo en After Effects y Cinema 4D.",
+    tags: "Cinema 4D · KeyShot",
+    icon: Box,
+    theme: {
+      badgeBg: "bg-emerald-500/15",
+      badgeBorder: "border-emerald-500/30",
+      badgeText: "text-emerald-400",
+      borderHover: "hover:border-emerald-400/60",
+      glow: "hover:shadow-[0_15px_35px_rgba(16,185,129,0.18)]",
+      footerText: "text-emerald-400"
+    }
+  },
+  {
+    id: "social",
+    category: "SOCIAL MEDIA",
+    title: "Redes Sociales & Paid Ads",
+    description: "Parrillas visuales de alto impacto, formatos verticales para TikTok y Reels, diseño de pautas publicitarias pagadas y motion graphics.",
+    tags: "After Effects · Reels · Ads",
+    icon: Share2,
+    theme: {
+      badgeBg: "bg-rose-500/15",
+      badgeBorder: "border-rose-500/30",
+      badgeText: "text-rose-400",
+      borderHover: "hover:border-rose-400/60",
+      glow: "hover:shadow-[0_15px_35px_rgba(244,63,94,0.18)]",
+      footerText: "text-rose-400"
+    }
+  },
+  {
+    id: "foto-video",
+    category: "PRODUCCIÓN",
+    title: "Fotografía & Video Comercial",
+    description: "Fotografía de producto en alta resolución, cobertura de eventos y producción de video comercial con dirección de arte cinematográfica.",
+    tags: "Foto Pro · 4K Video · Grading",
+    icon: Camera,
+    theme: {
+      badgeBg: "bg-amber-500/15",
+      badgeBorder: "border-amber-500/30",
+      badgeText: "text-amber-400",
+      borderHover: "hover:border-amber-400/60",
+      glow: "hover:shadow-[0_15px_35px_rgba(245,158,11,0.18)]",
+      footerText: "text-amber-400"
+    }
+  },
+  {
+    id: "print",
+    category: "EDITORIAL & PRINT",
+    title: "Diseño Print & Packaging",
+    description: "Diseño y producción de empaques, papelería corporativa de lujo, gran formato y material POP con acabados especiales de imprenta.",
+    tags: "Packaging · Print · Gran Formato",
+    icon: Layers,
+    theme: {
+      badgeBg: "bg-sky-500/15",
+      badgeBorder: "border-sky-500/30",
+      badgeText: "text-sky-400",
+      borderHover: "hover:border-sky-400/60",
+      glow: "hover:shadow-[0_15px_35px_rgba(14,165,233,0.18)]",
+      footerText: "text-sky-400"
+    }
+  }
+];
+
 export function ServicesSection() {
-  const [openServiceId, setOpenServiceId] = useState<string | null>("web");
-
-  const toggleService = (id: string) => {
-    setOpenServiceId(openServiceId === id ? null : id);
-  };
-
   return (
     <section id="servicios" className="py-20 md:py-36 bg-bg-dark relative border-t border-bg-border/60">
       <div className="max-w-7xl mx-auto px-5 md:px-12">
@@ -39,107 +130,68 @@ export function ServicesSection() {
           </h2>
         </div>
 
-        {/* Services Accordion List */}
-        <div className="space-y-4">
-          {SERVICES.map((service, index) => {
-            const isOpen = openServiceId === service.id;
+        {/* Services Colorful Cards Grid */}
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+          {SERVICES_CARDS.map((service, index) => {
+            const Icon = service.icon;
 
             return (
               <motion.div
                 key={service.id}
-                initial={{ opacity: 0, y: 30 }}
+                initial={{ opacity: 0, y: 25 }}
                 whileInView={{ opacity: 1, y: 0 }}
-                viewport={{ once: true, margin: "-30px" }}
-                transition={{ duration: 0.5, delay: index * 0.1 }}
-                layout
-                className={`rounded-2xl md:rounded-3xl border transition-all duration-500 overflow-hidden ${
-                  isOpen
-                    ? "bg-gradient-to-br from-bg-card via-[#0a1532] to-bg-dark border-cyan-accent/50 shadow-[0_0_35px_rgba(0,240,255,0.15)]"
-                    : "bg-bg-card/70 border-bg-border/80 hover:border-slate-700 hover:bg-bg-card"
-                }`}
+                viewport={{ once: true }}
+                transition={{ duration: 0.45, delay: index * 0.08 }}
+                className={`group relative bg-[#071126]/90 border border-slate-800/90 ${service.theme.borderHover} rounded-3xl p-6 sm:p-7 flex flex-col justify-between transition-all duration-300 shadow-xl ${service.theme.glow}`}
               >
-                {/* Accordion Header Bar */}
-                <button
-                  onClick={() => toggleService(service.id)}
-                  className="w-full p-6 md:p-10 flex items-center justify-between text-left focus:outline-none group gap-4"
+                <div>
+                  {/* Icon Container in rounded squircle */}
+                  <div
+                    className={`w-12 h-12 rounded-2xl ${service.theme.badgeBg} border ${service.theme.badgeBorder} flex items-center justify-center ${service.theme.badgeText} mb-6 group-hover:scale-105 transition-transform`}
+                  >
+                    <Icon className="w-6 h-6" />
+                  </div>
+
+                  {/* Category Uppercase Label */}
+                  <span className={`text-[11px] font-bold uppercase tracking-widest ${service.theme.badgeText} block mb-2`}>
+                    {service.category}
+                  </span>
+
+                  {/* Service Title */}
+                  <h3 className="font-display text-xl sm:text-2xl font-black text-white mb-3 tracking-tight group-hover:text-white transition-colors">
+                    {service.title}
+                  </h3>
+
+                  {/* Brief Effective Description */}
+                  <p className="text-slate-300 text-xs sm:text-sm leading-relaxed font-normal">
+                    {service.description}
+                  </p>
+                </div>
+
+                {/* Footer with Software / Tech Tags and Arrow */}
+                <div
+                  className={`mt-8 pt-4 border-t border-slate-800/80 flex items-center justify-between text-xs font-semibold ${service.theme.footerText}`}
                 >
-                  <div className="flex items-center gap-4 md:gap-8 min-w-0">
-                    <span
-                      className={`font-display text-xl sm:text-2xl md:text-4xl font-extrabold transition-colors truncate ${
-                        isOpen ? "text-cyan-accent" : "text-slate-300 group-hover:text-cyan-accent"
-                      }`}
-                    >
-                      {service.title}
-                    </span>
-                  </div>
-
-                  <div className="flex items-center gap-4 shrink-0">
-                    <span className="font-display text-lg md:text-2xl font-bold text-slate-500">
-                      {service.number}
-                    </span>
-                    <motion.div
-                      animate={{ rotate: isOpen ? 180 : 0 }}
-                      transition={{ duration: 0.3 }}
-                      className={`w-8 h-8 md:w-10 md:h-10 rounded-full flex items-center justify-center border transition-colors ${
-                        isOpen
-                          ? "bg-cyan-accent text-slate-950 border-cyan-accent"
-                          : "bg-bg-dark text-slate-400 border-bg-border group-hover:border-slate-600"
-                      }`}
-                    >
-                      <ChevronDown className="w-4 h-4 md:w-5 md:h-5" />
-                    </motion.div>
-                  </div>
-                </button>
-
-                {/* Accordion Body Content */}
-                <AnimatePresence initial={false}>
-                  {isOpen && (
-                    <motion.div
-                      initial={{ opacity: 0, height: 0 }}
-                      animate={{ opacity: 1, height: "auto" }}
-                      exit={{ opacity: 0, height: 0 }}
-                      transition={{ duration: 0.4, ease: "easeInOut" }}
-                    >
-                      <div className="px-6 pb-8 md:px-10 md:pb-12 pt-2 border-t border-bg-border/40 grid grid-cols-1 lg:grid-cols-12 gap-6 md:gap-8 items-start">
-                        {/* Description Paragraph */}
-                        <div className="lg:col-span-6 space-y-6">
-                          <p className="text-slate-300 text-sm sm:text-base md:text-xl leading-relaxed">
-                            {service.description}
-                          </p>
-                          <div>
-                            <a
-                              href="mailto:hola@alternika.com.mx"
-                              className="inline-flex items-center gap-2 px-6 py-3 rounded-full bg-cyan-accent text-slate-950 font-bold text-xs sm:text-sm hover:bg-cyan-hover transition-colors"
-                            >
-                              <span>Cotizar este servicio</span>
-                              <ArrowUpRight className="w-4 h-4" />
-                            </a>
-                          </div>
-                        </div>
-
-                        {/* Deliverables List */}
-                        <div className="lg:col-span-6 bg-bg-dark/80 p-5 md:p-8 rounded-2xl border border-bg-border">
-                          <h4 className="text-xs font-semibold text-cyan-accent uppercase tracking-widest mb-4">
-                            Entregables & Alcance:
-                          </h4>
-                          <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
-                            {service.items.map((item, idx) => (
-                              <div key={idx} className="flex items-start gap-2.5">
-                                <CheckCircle2 className="w-4 h-4 text-cyan-accent shrink-0 mt-0.5" />
-                                <span className="text-xs sm:text-sm text-slate-200 font-medium">
-                                  {item}
-                                </span>
-                              </div>
-                            ))}
-                          </div>
-                        </div>
-                      </div>
-                    </motion.div>
-                  )}
-                </AnimatePresence>
+                  <span>{service.tags}</span>
+                  <ArrowUpRight className="w-4 h-4 group-hover:translate-x-1 group-hover:-translate-y-1 transition-transform" />
+                </div>
               </motion.div>
             );
           })}
+        </div>
+
+        {/* Bottom CTA bar */}
+        <div className="mt-14 pt-8 border-t border-slate-800/80 flex flex-col sm:flex-row items-center justify-between gap-4">
+          <p className="text-slate-400 text-xs sm:text-sm text-center sm:text-left">
+            ¿Tienes un requerimiento específico o necesitas un proyecto a la medida?
+          </p>
+          <a
+            href="mailto:hola@alternika.com.mx"
+            className="inline-flex items-center gap-2 px-7 py-3 rounded-full bg-cyan-accent hover:bg-cyan-hover text-slate-950 font-extrabold text-xs sm:text-sm transition-all shadow-[0_0_20px_rgba(0,240,255,0.3)] active:scale-95 shrink-0"
+          >
+            <span>Cotizar un Proyecto</span>
+            <ArrowUpRight className="w-4 h-4" />
+          </a>
         </div>
       </div>
     </section>

@@ -397,8 +397,7 @@ TEL;TYPE=CELL,VOICE:+525522965764
 EMAIL;TYPE=INTERNET,WORK:mauriciorojasdiseno@gmail.com
 EMAIL;TYPE=INTERNET,HOME:mau@alternika.com.mx
 URL:https://alternika.com.mx/mauriciorojas
-URL;TYPE=PORTFOLIO:https://mauriciorojas.myportfolio.com
-NOTE:Diseñador Gráfico Senior con 20 años de experiencia liderando producción visual, UI/UX, 3D y marketing digital.
+NOTE:Diseñador Gráfico Senior con más de 16 años de experiencia liderando producción visual, UI/UX, 3D y marketing digital.
 ADR;TYPE=WORK:;;San Juan del Río;Querétaro;;;México
 END:VCARD`;
 
@@ -590,16 +589,16 @@ END:VCARD`;
                   </a>
 
                   <a
-                    href="https://mauriciorojas.myportfolio.com"
+                    href="https://wa.me/525522965764?text=Hola%20Mauricio,%20vi%20tu%20landing%20profesional%20y%20me%20gustar%C3%ADa%20conectar%20contigo."
                     target="_blank"
                     rel="noopener noreferrer"
                     className="flex flex-col items-center gap-1.5 p-2 rounded-xl hover:bg-slate-800/50 text-slate-300 hover:text-white transition-colors group"
-                    title="Ver portafolio en Adobe MyPortfolio"
+                    title="Enviar mensaje por WhatsApp"
                   >
-                    <div className="w-10 h-10 rounded-full bg-[#050c1c] border border-slate-800 flex items-center justify-center text-cyan-accent group-hover:bg-cyan-accent group-hover:text-slate-950 transition-all">
-                      <Globe className="w-4 h-4" />
+                    <div className="w-10 h-10 rounded-full bg-[#050c1c] border border-slate-800 flex items-center justify-center text-emerald-400 group-hover:bg-emerald-500 group-hover:text-slate-950 transition-all">
+                      <MessageCircle className="w-4 h-4" />
                     </div>
-                    <span className="text-[11px] font-semibold">Portfolio</span>
+                    <span className="text-[11px] font-semibold">WhatsApp</span>
                   </a>
 
                   <button
@@ -635,27 +634,27 @@ END:VCARD`;
                   Diseño marcas memorables y desarrollo <span className="text-cyan-accent">experiencias visuales</span> que impulsan negocios.
                 </h2>
                 <p className="text-slate-300 text-sm sm:text-base leading-relaxed mt-4">
-                  Especialista en la integración de <strong className="text-white">diseño UI/UX, animación 3D técnica, desarrollo web omnicanal y dirección de arte</strong>. Enfocado en liderar la conceptualización y optimizar procesos creativos mediante herramientas de Inteligencia Artificial para potenciar el impacto comercial y publicitario.
+                  Especialista en <strong className="text-white">UI/UX, modelado 3D técnico, branding y desarrollo web</strong>. Optimizando flujos creativos con Inteligencia Artificial.
                 </p>
               </div>
 
-              {/* GRID DE CARDS CON DATOS RELEVANTES (20 AÑOS, EMPRESAS, ALCANCE, FORMACIÓN) */}
+              {/* GRID DE CARDS CON DATOS RELEVANTES (16+ AÑOS, EMPRESAS, ALCANCE, FORMACIÓN) */}
               <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 sm:gap-4">
                 
-                {/* Card 1: 20 Años de Experiencia */}
+                {/* Card 1: 16+ Años de Experiencia */}
                 <div className="bg-gradient-to-br from-[#0c2447] via-[#08162f] to-[#040c1c] border border-cyan-500/40 rounded-2xl p-4 sm:p-5 flex flex-col justify-between shadow-[0_0_20px_rgba(0,240,255,0.15)] relative overflow-hidden group hover:border-cyan-400 transition-all">
                   <div className="w-8 h-8 rounded-lg bg-cyan-accent/20 flex items-center justify-center text-cyan-accent mb-3">
                     <Clock className="w-4 h-4" />
                   </div>
                   <div>
                     <div className="text-2xl sm:text-3xl lg:text-4xl font-black text-cyan-accent font-display tracking-tight">
-                      20+
+                      16+
                     </div>
                     <div className="text-[11px] sm:text-xs text-slate-300 font-semibold mt-0.5">
                       Años de Trayectoria
                     </div>
                     <div className="text-[10px] text-slate-400 mt-0.5">
-                      Desde 2008 en la industria
+                      Más de 16 años de experiencia
                     </div>
                   </div>
                 </div>
@@ -744,7 +743,7 @@ END:VCARD`;
                       UI/UX & Desarrollo Web
                     </h4>
                     <p className="text-xs text-slate-300 leading-relaxed">
-                      Sistemas de diseño, prototipado interactivo en Figma, diseño web enfocado a conversión y plataformas modernas en Next.js y WordPress.
+                      Sistemas de diseño, prototipado en Figma y desarrollo moderno en Next.js y WordPress.
                     </p>
                   </div>
                   <div className="mt-5 pt-3 border-t border-slate-800 flex items-center justify-between text-xs text-cyan-accent font-semibold">
@@ -766,7 +765,7 @@ END:VCARD`;
                       Branding & Diseño Editorial
                     </h4>
                     <p className="text-xs text-slate-300 leading-relaxed">
-                      Construcción integral de marcas: diseño de logotipo, manuales normativos, empaques, catálogos comerciales y supervisión de imprenta.
+                      Diseño de logotipos, manuales normativos de identidad, empaques y catálogos.
                     </p>
                   </div>
                   <div className="mt-5 pt-3 border-t border-slate-800 flex items-center justify-between text-xs text-purple-400 font-semibold">
@@ -788,7 +787,7 @@ END:VCARD`;
                       Modelado 3D & Motion
                     </h4>
                     <p className="text-xs text-slate-300 leading-relaxed">
-                      Animaciones técnicas 3D, simulaciones industriales, renders fotorrealistas y video corporativo en After Effects y Cinema 4D.
+                      Animaciones técnicas 3D, renders industriales fotorrealistas y motion graphics.
                     </p>
                   </div>
                   <div className="mt-5 pt-3 border-t border-slate-800 flex items-center justify-between text-xs text-emerald-400 font-semibold">
@@ -800,30 +799,16 @@ END:VCARD`;
               </div>
             </section>
 
-            {/* SECCIÓN 3: GALERÍA DE PORTAFOLIO INMEDIATO (MASONRY & LIGHTBOX INTERACTIVO) */}
-            <section className="space-y-6">
-              <div className="flex flex-col sm:flex-row sm:items-end justify-between gap-3">
-                <div>
-                  <div className="inline-flex items-center gap-2 text-xs font-mono font-bold text-cyan-accent uppercase tracking-wider mb-1">
-                    <span className="w-2 h-2 rounded-full bg-cyan-accent" />
-                    <span>Portafolio Gráfico & Experiencia Visual</span>
-                  </div>
-                  <h3 className="text-2xl sm:text-3xl font-black text-white font-display">
-                    Galería de Proyectos
-                  </h3>
-                  <p className="text-xs sm:text-sm text-slate-400 mt-1 max-w-2xl leading-relaxed">
-                    Muestra visual inmediata de 21 piezas selectas de diseño, branding, modelado 3D, publicidad exterior y contenido digital. Haz clic en cualquier imagen para abrirla a pantalla completa y navegarla.
-                  </p>
+            {/* SECCIÓN 3: GALERÍA DE PORTAFOLIO INMEDIATO (MASONRY & LIGHTBOX) */}
+            <section className="space-y-5">
+              <div>
+                <div className="inline-flex items-center gap-2 text-xs font-mono font-bold text-cyan-accent uppercase tracking-wider mb-1">
+                  <span className="w-2 h-2 rounded-full bg-cyan-accent" />
+                  <span>Portafolio Gráfico</span>
                 </div>
-                <a
-                  href="https://mauriciorojas.myportfolio.com"
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="inline-flex items-center gap-1.5 text-xs font-bold text-cyan-accent hover:underline self-start sm:self-auto shrink-0"
-                >
-                  <span>Ver Adobe MyPortfolio</span>
-                  <ExternalLink className="w-3.5 h-3.5" />
-                </a>
+                <h3 className="text-2xl sm:text-3xl font-black text-white font-display">
+                  Galería de Proyectos
+                </h3>
               </div>
 
               {/* Filtros de Categoría */}
@@ -851,7 +836,7 @@ END:VCARD`;
                 })}
               </div>
 
-              {/* Retícula Masonry en Columnas CSS */}
+              {/* Retícula Masonry en Columnas CSS: Puras imágenes redondeadas con hover y botón ver full */}
               <div className="columns-1 sm:columns-2 xl:columns-3 gap-4 [column-fill:_balance]">
                 {filteredGallery.map((item, idx) => (
                   <motion.div
@@ -861,46 +846,35 @@ END:VCARD`;
                     viewport={{ once: true }}
                     transition={{ duration: 0.35, delay: Math.min(idx * 0.03, 0.3) }}
                     onClick={() => setActiveLightboxIndex(idx)}
-                    className="break-inside-avoid mb-4 group cursor-pointer relative rounded-2xl overflow-hidden bg-[#081226]/90 border border-slate-800/90 hover:border-cyan-accent/60 transition-all duration-300 shadow-lg hover:shadow-[0_10px_35px_rgba(0,240,255,0.18)] flex flex-col"
+                    className="break-inside-avoid mb-4 group cursor-pointer relative rounded-2xl overflow-hidden bg-slate-950 border border-slate-800/80 hover:border-cyan-accent/60 transition-all duration-300 shadow-lg hover:shadow-[0_10px_35px_rgba(0,240,255,0.2)] block"
                   >
-                    <div className="relative overflow-hidden bg-slate-950">
-                      <Image
-                        src={item.src}
-                        alt={item.title}
-                        width={720}
-                        height={500}
-                        className="w-full h-auto object-cover transition-transform duration-500 group-hover:scale-105"
-                        sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 33vw"
-                      />
-                      {/* Overlay sutil al hacer hover */}
-                      <div className="absolute inset-0 bg-gradient-to-t from-[#040814]/90 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex items-end justify-between p-3.5">
-                        <span className="text-[11px] font-bold text-white flex items-center gap-1.5 bg-[#040814]/85 px-2.5 py-1 rounded-full border border-cyan-accent/30 shadow-md backdrop-blur-sm">
-                          <ZoomIn className="w-3.5 h-3.5 text-cyan-accent" />
-                          <span>Ver en grande</span>
-                        </span>
-                        <span className="text-[10px] font-mono text-cyan-accent bg-cyan-accent/15 px-2 py-0.5 rounded-full border border-cyan-accent/30">
-                          {idx + 1}/{filteredGallery.length}
-                        </span>
-                      </div>
-                    </div>
-
-                    {/* Detalle y Ficha de la pieza */}
-                    <div className="p-4 bg-[#071124] border-t border-slate-800/80 flex flex-col justify-between">
-                      <div>
-                        <div className="flex items-center justify-between gap-2 mb-1.5">
-                          <span className="text-[10px] font-mono uppercase tracking-wider text-cyan-accent bg-cyan-accent/10 px-2 py-0.5 rounded-full border border-cyan-accent/20">
-                            {item.tag}
-                          </span>
-                          <span className="text-[10px] text-slate-500 group-hover:text-cyan-accent transition-colors flex items-center gap-0.5">
-                            Ampliar <ArrowUpRight className="w-3 h-3" />
-                          </span>
+                    <Image
+                      src={item.src}
+                      alt={item.title}
+                      width={720}
+                      height={500}
+                      className="w-full h-auto object-cover transition-transform duration-500 group-hover:scale-105 block"
+                      sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 33vw"
+                    />
+                    
+                    {/* Overlay al hacer hover: Categoría arriba, Título y botón ver full abajo a la derecha */}
+                    <div className="absolute inset-0 bg-gradient-to-t from-[#020612]/90 via-[#020612]/25 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex flex-col justify-between p-3.5 pointer-events-none">
+                      <span className="self-start text-[10px] font-mono font-bold text-cyan-accent bg-cyan-accent/15 border border-cyan-accent/30 px-2.5 py-0.5 rounded-full backdrop-blur-sm">
+                        {item.tag}
+                      </span>
+                      <div className="flex items-end justify-between gap-2">
+                        <div className="min-w-0 pr-2">
+                          <h4 className="text-xs sm:text-sm font-bold text-white line-clamp-1 drop-shadow-md">
+                            {item.title}
+                          </h4>
+                          <p className="text-[10px] text-slate-300 line-clamp-1 opacity-90">
+                            {item.description}
+                          </p>
                         </div>
-                        <h4 className="text-sm font-bold text-white group-hover:text-cyan-accent transition-colors leading-snug">
-                          {item.title}
-                        </h4>
-                        <p className="text-xs text-slate-400 mt-1 line-clamp-2 leading-relaxed">
-                          {item.description}
-                        </p>
+                        {/* Icono ver full a la derecha abajo */}
+                        <div className="w-8 h-8 rounded-full bg-cyan-accent text-slate-950 flex items-center justify-center shrink-0 shadow-[0_0_15px_rgba(0,240,255,0.5)] group-hover:scale-110 transition-transform">
+                          <ArrowUpRight className="w-4 h-4 stroke-[2.5]" />
+                        </div>
                       </div>
                     </div>
                   </motion.div>

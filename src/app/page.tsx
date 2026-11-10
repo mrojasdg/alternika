@@ -50,11 +50,11 @@ export default function Home() {
         </div>
 
         {/* Main Hero Center Content Container */}
-        <div className="max-w-5xl mx-auto px-4 sm:px-6 md:px-12 relative z-10 w-full flex flex-col items-center justify-center my-auto py-6 sm:py-8">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 md:px-12 relative z-10 w-full flex flex-col items-center justify-center my-auto py-6">
           
-          {/* Centered Headline - Larger on mobile */}
-          <div className="mb-4 sm:mb-6 w-full flex flex-col items-center justify-center text-center">
-            <h1 className="font-display text-4xl sm:text-5xl md:text-6xl lg:text-7xl xl:text-8xl font-black text-white leading-[1.08] tracking-tight space-y-1 sm:space-y-2">
+          {/* Centered Headline */}
+          <div className="mb-6 w-full flex flex-col items-center justify-center text-center">
+            <h1 className="font-display text-3xl sm:text-4xl md:text-5xl lg:text-6xl xl:text-7xl font-black text-white leading-[1.08] tracking-tight space-y-1">
               <div className="w-full flex justify-center">
                 <TextReveal
                   text="Construimos marcas."
@@ -74,17 +74,17 @@ export default function Home() {
             </h1>
           </div>
 
-          {/* Descriptive Copy - Larger on mobile */}
+          {/* Descriptive Copy */}
           <motion.p
             initial={{ opacity: 0, y: 15 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.5, delay: 0.35 }}
-            className="text-slate-200 text-base sm:text-lg md:text-xl max-w-xl sm:max-w-2xl mx-auto leading-relaxed mb-8 sm:mb-10 font-normal text-center px-2"
+            className="text-slate-300 text-xs sm:text-sm max-w-2xl mx-auto leading-relaxed mb-8 font-normal text-center px-2"
           >
-            Fusionamos diseño web, estrategia digital, foto, video y 3D para que tu proyecto destaque con alto impacto en cualquier plataforma, física o digital.
+            Tu aliado creativo y tecnológico. Fusionamos diseño web, estrategia digital, foto, video y 3D para que tu proyecto destaque en cualquier plataforma, física o digital.
           </motion.p>
 
-          {/* Action Buttons: Full-width on mobile, auto on tablet/desktop */}
+          {/* Action Buttons */}
           <motion.div
             initial={{ opacity: 0, y: 15 }}
             animate={{ opacity: 1, y: 0 }}
@@ -93,7 +93,7 @@ export default function Home() {
           >
             <Link
               href="/proyectos"
-              className="group relative inline-flex items-center justify-center gap-2.5 px-8 py-4 rounded-full bg-cyan-accent hover:bg-cyan-hover text-slate-950 font-extrabold text-sm sm:text-base transition-all duration-300 shadow-[0_0_35px_rgba(0,240,255,0.45)] active:scale-95"
+              className="group relative inline-flex items-center justify-center gap-2.5 px-8 py-3.5 rounded-full bg-cyan-accent hover:bg-cyan-hover text-slate-950 font-extrabold text-xs sm:text-sm md:text-base transition-all duration-300 shadow-[0_0_35px_rgba(0,240,255,0.45)] active:scale-95"
               data-cursor="PORTAFOLIO"
             >
               <span>Ver proyectos</span>
@@ -102,7 +102,7 @@ export default function Home() {
 
             <a
               href="mailto:hola@alternika.com.mx"
-              className="inline-flex items-center justify-center gap-2.5 px-8 py-4 rounded-full border border-slate-700/90 bg-[#09152e]/80 hover:bg-[#0e2045] hover:border-cyan-accent/50 text-white font-semibold text-sm sm:text-base transition-all duration-300 active:scale-95"
+              className="inline-flex items-center justify-center gap-2.5 px-8 py-3.5 rounded-full border border-slate-700/90 bg-[#09152e]/80 hover:bg-[#0e2045] hover:border-cyan-accent/50 text-white font-semibold text-xs sm:text-sm md:text-base transition-all duration-300 active:scale-95"
             >
               <span>Contacto Directo</span>
             </a>
