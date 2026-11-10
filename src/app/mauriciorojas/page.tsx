@@ -23,6 +23,9 @@ import {
   MapPin,
   Send,
   ChevronRight,
+  ChevronLeft,
+  X,
+  ZoomIn,
   ArrowUpRight,
   Globe,
   FileText,
@@ -35,47 +38,184 @@ import {
   BookOpen
 } from "lucide-react";
 
-// Proyectos selectos del portafolio gráfico y digital
-const FEATURED_PORTFOLIO = [
+// 21 Proyectos del portafolio gráfico y digital desde /public/portafolio
+export interface PortfolioItem {
+  id: string;
+  src: string;
+  title: string;
+  category: string;
+  tag: string;
+  description: string;
+}
+
+const PORTFOLIO_GALLERY: PortfolioItem[] = [
   {
-    id: "aura",
-    title: "Aura Digital Luxury",
-    category: "UI/UX & E-Commerce 3D",
-    role: "Lead UI/UX & Creative Direction",
-    image: "https://images.unsplash.com/photo-1460925895917-afdab827c52f?q=80&w=1200&auto=format&fit=crop",
-    link: "/proyectos/aura-digital",
-    description: "Plataforma de comercio electrónico de lujo con integración de modelos 3D interactivos, microinteracciones y arquitectura visual de vanguardia.",
-    tags: ["UI/UX", "Next.js", "3D Renders", "Figma"]
+    id: "branding-1",
+    src: "/portafolio/branding-1.jpg",
+    title: "Identidad Corporativa & Manual de Marca",
+    category: "Branding",
+    tag: "Manual Normativo",
+    description: "Construcción de logotipo, retícula de construcción, paleta de color y lineamientos normativos."
   },
   {
-    id: "kroma",
-    title: "Kroma Studio",
-    category: "Identidad Visual & Branding",
-    role: "Brand Architecture & Typography",
-    image: "https://images.unsplash.com/photo-1600132806370-bf17e65e942f?q=80&w=1200&auto=format&fit=crop",
-    link: "/proyectos/kroma-studio",
-    description: "Sistema global de identidad de marca para firma de arquitectura: diseño de logotipo dinámico, manual de identidad y papelería corporativa.",
-    tags: ["Branding", "Tipografía", "Manual de Marca", "Illustrator"]
+    id: "branding-2",
+    src: "/portafolio/Branding-2.jpg",
+    title: "Sistema de Identidad & Papelería",
+    category: "Branding",
+    tag: "Papelería Corporativa",
+    description: "Estandarización de aplicaciones de marca, papelería institucional y elementos de presentación."
   },
   {
-    id: "nebula",
-    title: "Nébula Magazine",
-    category: "Diseño Editorial & Print",
-    role: "Editorial Layout & Art Direction",
-    image: "https://images.unsplash.com/photo-1544716278-ca5e3f4abd8c?q=80&w=1200&auto=format&fit=crop",
-    link: "/proyectos/nebula-magazine",
-    description: "Diseño y maquetación de revista cultural y tecnológica con acabados táctiles, esquemas reticulares contemporáneos y supervisión de imprenta.",
-    tags: ["Editorial", "InDesign", "Print Premium", "Dirección de Arte"]
+    id: "branding-3",
+    src: "/portafolio/Branding-3.png",
+    title: "Arquitectura de Marca & Logotipo",
+    category: "Branding",
+    tag: "Identidad Visual",
+    description: "Conceptualización tipográfica y gráfica para posicionamiento y distinción en el mercado."
   },
   {
-    id: "vortex",
-    title: "Vortex Motion & Social",
-    category: "Motion Graphics & Redes",
-    role: "Motion Design & Social Strategy",
-    image: "https://images.unsplash.com/photo-1611162617474-5b21e879e113?q=80&w=1200&auto=format&fit=crop",
-    link: "/proyectos/vortex-social",
-    description: "Campaña multicanal y piezas audiovisuales dinámicas (2D/3D) para marcas globales, optimizando retención y engagement publicitario.",
-    tags: ["After Effects", "Cinema 4D", "Social Media", "Video"]
+    id: "logo-yogurthyfrutas",
+    src: "/portafolio/Logo-Yogurthyfrutas.jpg",
+    title: "Diseño de Logotipo Yogurt & Frutas",
+    category: "Branding",
+    tag: "Identidad de Marca",
+    description: "Logotipo moderno y fresco diseñado para el sector de alimentos saludables y lácteos."
+  },
+  {
+    id: "diseno-catalogos",
+    src: "/portafolio/Diseno-Catalogos.jpg",
+    title: "Diseño de Catálogo Industrial",
+    category: "Editorial",
+    tag: "Diseño Editorial",
+    description: "Maquetación y diagramación de catálogo corporativo para línea de productos industriales."
+  },
+  {
+    id: "anuncio-revista",
+    src: "/portafolio/Anuncio-Revista.jpg",
+    title: "Diseño de Anuncio de Revista",
+    category: "Editorial",
+    tag: "Publicidad Impresa",
+    description: "Pauta publicitaria a página completa para revista especializada con composición tipográfica de impacto."
+  },
+  {
+    id: "diseno-flyer",
+    src: "/portafolio/Diseno-Flyer.jpg",
+    title: "Diseño de Flyer Promocional",
+    category: "Editorial",
+    tag: "Diseño Publicitario",
+    description: "Material impreso promocional de alto contraste visual para punto de venta y eventos de captación."
+  },
+  {
+    id: "diseno-gafetes",
+    src: "/portafolio/Diseno-Gafetes.jpg",
+    title: "Diseño de Gafetes y Acreditaciones",
+    category: "Editorial",
+    tag: "Identidad Institucional",
+    description: "Credenciales corporativas con código de seguridad y diseño normativo para personal de eventos."
+  },
+  {
+    id: "diseno-banner-web",
+    src: "/portafolio/Diseno-Banner-Web.jpg",
+    title: "Diseño de Banner Web Comercial",
+    category: "Digital",
+    tag: "Diseño Web",
+    description: "Creatividades digitales optimizadas para campañas de display, portales web y e-commerce."
+  },
+  {
+    id: "diseno-banner-web1",
+    src: "/portafolio/Diseno-Banner-Web1.jpg",
+    title: "Banners Promocionales para E-Commerce",
+    category: "Digital",
+    tag: "Diseño Web",
+    description: "Piezas gráficas para cabeceras web orientadas a maximizar la tasa de conversión y clics."
+  },
+  {
+    id: "redes-sociales1",
+    src: "/portafolio/redes-sociales1.png",
+    title: "Campaña Estratégica en Redes Sociales I",
+    category: "Social Media",
+    tag: "Social Media",
+    description: "Parrilla de contenido visual y creatividades publicitarias para ecosistema de redes sociales."
+  },
+  {
+    id: "redes-sociales2-jpg",
+    src: "/portafolio/Redes-sociales2.jpg",
+    title: "Campaña Estratégica en Redes Sociales II",
+    category: "Social Media",
+    tag: "Social Media",
+    description: "Post publicitario para pauta digital enfocado en interacción, alcance y posicionamiento de marca."
+  },
+  {
+    id: "redessociales2-alt",
+    src: "/portafolio/redessociales2.jpg",
+    title: "Campaña Estratégica en Redes Sociales III",
+    category: "Social Media",
+    tag: "Social Media",
+    description: "Estrategia gráfica de publicaciones e historias con alta tasa de interacción y engagement."
+  },
+  {
+    id: "redes-sociales-3",
+    src: "/portafolio/redes-sociales-3.png",
+    title: "Campaña Estratégica en Redes Sociales IV",
+    category: "Social Media",
+    tag: "Social Media",
+    description: "Diseño de creatividades para anuncios pagados en Instagram y LinkedIn con enfoque comercial."
+  },
+  {
+    id: "diseno-grafico-1",
+    src: "/portafolio/Diseno-grafico-1.jpg",
+    title: "Diseño Gráfico & Composición Publicitaria",
+    category: "Publicidad",
+    tag: "Composición Gráfica",
+    description: "Composición gráfica con tratamiento fotográfico, armonía cromática y balance tipográfico."
+  },
+  {
+    id: "diseno-stand",
+    src: "/portafolio/Diseno-Stand.jpg",
+    title: "Diseño de Stand para Expo I",
+    category: "Espacios & BTL",
+    tag: "Diseño de Stand",
+    description: "Propuesta arquitectónica y gráfica de stand para ferias industriales y convenciones comerciales."
+  },
+  {
+    id: "diseno-stand-2",
+    src: "/portafolio/Diseno-Stand-2.jpg",
+    title: "Diseño de Stand para Expo II",
+    category: "Espacios & BTL",
+    tag: "Diseño de Stand",
+    description: "Gráficos de gran formato, señalética y ambientación corporativa para pabellón de marca."
+  },
+  {
+    id: "diseno-valla",
+    src: "/portafolio/Diseno-Valla.jpg",
+    title: "Diseño de Valla Publicitaria I",
+    category: "Espacios & BTL",
+    tag: "Publicidad Exterior (OOH)",
+    description: "Cartelera espectacular de gran formato con mensaje comercial conciso y máxima legibilidad."
+  },
+  {
+    id: "diseno-valla-2",
+    src: "/portafolio/Diseno-valla-2.jpg",
+    title: "Diseño de Valla Publicitaria II",
+    category: "Espacios & BTL",
+    tag: "Publicidad Exterior (OOH)",
+    description: "Valla panorámica de alto contraste con dirección de arte para vialidades de alto tráfico."
+  },
+  {
+    id: "diseno-y-modelado-3d",
+    src: "/portafolio/Diseno-y-modelado-3d.jpg",
+    title: "Diseño & Modelado 3D de Producto",
+    category: "Modelado 3D",
+    tag: "Modelado 3D",
+    description: "Modelado tridimensional técnico y render fotorrealista para exhibición de catálogo y producto."
+  },
+  {
+    id: "modelado3d-1",
+    src: "/portafolio/Modelado3D-1.png",
+    title: "Render Industrial & Simulación 3D",
+    category: "Modelado 3D",
+    tag: "Render Fotorrealista",
+    description: "Visualización técnica con simulación de texturas y materiales fotorrealistas de alta fidelidad."
   }
 ];
 
@@ -157,6 +297,80 @@ const SKILLS_CATEGORIES = [
 export default function MauricioRojasLanding() {
   const [copiedLink, setCopiedLink] = useState(false);
   const [showDock, setShowDock] = useState(false);
+
+  // Estados para la galería masonry y lightbox
+  const [selectedCategory, setSelectedCategory] = useState("Todos");
+  const [activeLightboxIndex, setActiveLightboxIndex] = useState<number | null>(null);
+  const [touchStartX, setTouchStartX] = useState<number | null>(null);
+
+  const CATEGORIES = ["Todos", "Branding", "Digital", "Social Media", "Modelado 3D", "Espacios & BTL", "Editorial", "Publicidad"];
+
+  const filteredGallery = selectedCategory === "Todos"
+    ? PORTFOLIO_GALLERY
+    : PORTFOLIO_GALLERY.filter((item) => item.category === selectedCategory);
+
+  // Navegación del lightbox
+  const handleNextImage = () => {
+    if (activeLightboxIndex !== null && filteredGallery.length > 0) {
+      setActiveLightboxIndex((prev) => ((prev ?? 0) + 1) % filteredGallery.length);
+    }
+  };
+
+  const handlePrevImage = () => {
+    if (activeLightboxIndex !== null && filteredGallery.length > 0) {
+      setActiveLightboxIndex((prev) => ((prev ?? 0) - 1 + filteredGallery.length) % filteredGallery.length);
+    }
+  };
+
+  const handleCloseLightbox = () => {
+    setActiveLightboxIndex(null);
+  };
+
+  // Navegación con teclado (Flecha izquierda, derecha y Escape)
+  useEffect(() => {
+    const handleKeyDown = (e: KeyboardEvent) => {
+      if (activeLightboxIndex === null) return;
+      if (e.key === "ArrowRight") {
+        handleNextImage();
+      } else if (e.key === "ArrowLeft") {
+        handlePrevImage();
+      } else if (e.key === "Escape") {
+        handleCloseLightbox();
+      }
+    };
+
+    window.addEventListener("keydown", handleKeyDown);
+    return () => window.removeEventListener("keydown", handleKeyDown);
+  }, [activeLightboxIndex, filteredGallery.length]);
+
+  // Bloquear scroll de la página cuando el modal está activo
+  useEffect(() => {
+    if (activeLightboxIndex !== null) {
+      document.body.style.overflow = "hidden";
+    } else {
+      document.body.style.overflow = "unset";
+    }
+    return () => {
+      document.body.style.overflow = "unset";
+    };
+  }, [activeLightboxIndex]);
+
+  // Gestos táctiles de deslizamiento (swipe) en dispositivos móviles
+  const handleTouchStart = (e: React.TouchEvent) => {
+    setTouchStartX(e.touches[0].clientX);
+  };
+
+  const handleTouchEnd = (e: React.TouchEvent) => {
+    if (touchStartX === null) return;
+    const touchEndX = e.changedTouches[0].clientX;
+    const diff = touchStartX - touchEndX;
+    if (diff > 50) {
+      handleNextImage();
+    } else if (diff < -50) {
+      handlePrevImage();
+    }
+    setTouchStartX(null);
+  };
 
   // Controlar barra flotante móvil al hacer scroll
   useEffect(() => {
@@ -586,85 +800,109 @@ END:VCARD`;
               </div>
             </section>
 
-            {/* SECCIÓN 3: PORTAFOLIO SELECTO (SHOWCASE VISUAL CON CASOS DE ESTUDIO) */}
-            <section className="space-y-5">
+            {/* SECCIÓN 3: GALERÍA DE PORTAFOLIO INMEDIATO (MASONRY & LIGHTBOX INTERACTIVO) */}
+            <section className="space-y-6">
               <div className="flex flex-col sm:flex-row sm:items-end justify-between gap-3">
                 <div>
                   <div className="inline-flex items-center gap-2 text-xs font-mono font-bold text-cyan-accent uppercase tracking-wider mb-1">
                     <span className="w-2 h-2 rounded-full bg-cyan-accent" />
-                    <span>Muestra Visual</span>
+                    <span>Portafolio Gráfico & Experiencia Visual</span>
                   </div>
                   <h3 className="text-2xl sm:text-3xl font-black text-white font-display">
-                    Portafolio Reducido de Experiencia
+                    Galería de Proyectos
                   </h3>
+                  <p className="text-xs sm:text-sm text-slate-400 mt-1 max-w-2xl leading-relaxed">
+                    Muestra visual inmediata de 21 piezas selectas de diseño, branding, modelado 3D, publicidad exterior y contenido digital. Haz clic en cualquier imagen para abrirla a pantalla completa y navegarla.
+                  </p>
                 </div>
                 <a
                   href="https://mauriciorojas.myportfolio.com"
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="inline-flex items-center gap-1.5 text-xs font-bold text-cyan-accent hover:underline self-start sm:self-auto"
+                  className="inline-flex items-center gap-1.5 text-xs font-bold text-cyan-accent hover:underline self-start sm:self-auto shrink-0"
                 >
-                  <span>Ver portafolio Adobe MyPortfolio</span>
+                  <span>Ver Adobe MyPortfolio</span>
                   <ExternalLink className="w-3.5 h-3.5" />
                 </a>
               </div>
 
-              <div className="grid grid-cols-1 sm:grid-cols-2 gap-5">
-                {FEATURED_PORTFOLIO.map((item, idx) => (
+              {/* Filtros de Categoría */}
+              <div className="flex items-center gap-1.5 sm:gap-2 overflow-x-auto pb-2 scrollbar-thin scrollbar-thumb-slate-800 -mx-1 px-1">
+                {CATEGORIES.map((cat) => {
+                  const count = cat === "Todos"
+                    ? PORTFOLIO_GALLERY.length
+                    : PORTFOLIO_GALLERY.filter((p) => p.category === cat).length;
+                  return (
+                    <button
+                      key={cat}
+                      onClick={() => {
+                        setSelectedCategory(cat);
+                        setActiveLightboxIndex(null);
+                      }}
+                      className={`px-3 py-1.5 rounded-full text-xs font-semibold whitespace-nowrap transition-all duration-200 ${
+                        selectedCategory === cat
+                          ? "bg-cyan-accent text-slate-950 shadow-[0_0_15px_rgba(0,240,255,0.35)]"
+                          : "bg-[#081226] text-slate-400 hover:text-white border border-slate-800 hover:border-slate-700"
+                      }`}
+                    >
+                      {cat} ({count})
+                    </button>
+                  );
+                })}
+              </div>
+
+              {/* Retícula Masonry en Columnas CSS */}
+              <div className="columns-1 sm:columns-2 xl:columns-3 gap-4 [column-fill:_balance]">
+                {filteredGallery.map((item, idx) => (
                   <motion.div
                     key={item.id}
                     initial={{ opacity: 0, y: 15 }}
                     whileInView={{ opacity: 1, y: 0 }}
                     viewport={{ once: true }}
-                    transition={{ duration: 0.4, delay: idx * 0.08 }}
-                    className="group bg-[#081226]/80 border border-slate-800/90 hover:border-cyan-accent/50 rounded-3xl p-5 transition-all duration-300 shadow-xl flex flex-col justify-between overflow-hidden"
+                    transition={{ duration: 0.35, delay: Math.min(idx * 0.03, 0.3) }}
+                    onClick={() => setActiveLightboxIndex(idx)}
+                    className="break-inside-avoid mb-4 group cursor-pointer relative rounded-2xl overflow-hidden bg-[#081226]/90 border border-slate-800/90 hover:border-cyan-accent/60 transition-all duration-300 shadow-lg hover:shadow-[0_10px_35px_rgba(0,240,255,0.18)] flex flex-col"
                   >
-                    <div>
-                      {/* Portada */}
-                      <div className="relative w-full h-48 sm:h-52 rounded-2xl overflow-hidden bg-slate-900 mb-4">
-                        <Image
-                          src={item.image}
-                          alt={item.title}
-                          fill
-                          className="object-cover group-hover:scale-105 transition-transform duration-500"
-                        />
-                        <div className="absolute inset-0 bg-gradient-to-t from-[#040814]/80 via-transparent to-transparent" />
-                        <span className="absolute top-3 left-3 bg-[#040814]/85 backdrop-blur-md border border-white/10 px-3 py-1 rounded-full text-[10px] font-bold text-cyan-accent">
-                          {item.category}
+                    <div className="relative overflow-hidden bg-slate-950">
+                      <Image
+                        src={item.src}
+                        alt={item.title}
+                        width={720}
+                        height={500}
+                        className="w-full h-auto object-cover transition-transform duration-500 group-hover:scale-105"
+                        sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 33vw"
+                      />
+                      {/* Overlay sutil al hacer hover */}
+                      <div className="absolute inset-0 bg-gradient-to-t from-[#040814]/90 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex items-end justify-between p-3.5">
+                        <span className="text-[11px] font-bold text-white flex items-center gap-1.5 bg-[#040814]/85 px-2.5 py-1 rounded-full border border-cyan-accent/30 shadow-md backdrop-blur-sm">
+                          <ZoomIn className="w-3.5 h-3.5 text-cyan-accent" />
+                          <span>Ver en grande</span>
                         </span>
-                      </div>
-
-                      {/* Info */}
-                      <div className="text-[11px] font-semibold text-slate-400 mb-1">
-                        {item.role}
-                      </div>
-                      <h4 className="text-lg font-bold text-white group-hover:text-cyan-accent transition-colors font-display mb-2">
-                        {item.title}
-                      </h4>
-                      <p className="text-xs text-slate-300 line-clamp-2 leading-relaxed mb-4">
-                        {item.description}
-                      </p>
-
-                      {/* Tags */}
-                      <div className="flex flex-wrap gap-1 mb-4">
-                        {item.tags.map((tag) => (
-                          <span
-                            key={tag}
-                            className="text-[10px] font-mono bg-[#050c1c] border border-slate-800 text-slate-400 px-2.5 py-0.5 rounded-full"
-                          >
-                            {tag}
-                          </span>
-                        ))}
+                        <span className="text-[10px] font-mono text-cyan-accent bg-cyan-accent/15 px-2 py-0.5 rounded-full border border-cyan-accent/30">
+                          {idx + 1}/{filteredGallery.length}
+                        </span>
                       </div>
                     </div>
 
-                    <Link
-                      href={item.link}
-                      className="w-full py-2.5 rounded-xl bg-[#0b1836] border border-[#152e5c] hover:border-cyan-accent/60 text-slate-200 hover:text-white text-xs font-bold transition-all flex items-center justify-center gap-2 group-hover:bg-cyan-accent group-hover:text-slate-950"
-                    >
-                      <span>Ver Caso de Estudio</span>
-                      <ArrowUpRight className="w-3.5 h-3.5" />
-                    </Link>
+                    {/* Detalle y Ficha de la pieza */}
+                    <div className="p-4 bg-[#071124] border-t border-slate-800/80 flex flex-col justify-between">
+                      <div>
+                        <div className="flex items-center justify-between gap-2 mb-1.5">
+                          <span className="text-[10px] font-mono uppercase tracking-wider text-cyan-accent bg-cyan-accent/10 px-2 py-0.5 rounded-full border border-cyan-accent/20">
+                            {item.tag}
+                          </span>
+                          <span className="text-[10px] text-slate-500 group-hover:text-cyan-accent transition-colors flex items-center gap-0.5">
+                            Ampliar <ArrowUpRight className="w-3 h-3" />
+                          </span>
+                        </div>
+                        <h4 className="text-sm font-bold text-white group-hover:text-cyan-accent transition-colors leading-snug">
+                          {item.title}
+                        </h4>
+                        <p className="text-xs text-slate-400 mt-1 line-clamp-2 leading-relaxed">
+                          {item.description}
+                        </p>
+                      </div>
+                    </div>
                   </motion.div>
                 ))}
               </div>
@@ -925,6 +1163,151 @@ END:VCARD`;
             >
               <MessageCircle className="w-6 h-6" />
             </a>
+          </motion.div>
+        )}
+      </AnimatePresence>
+
+      {/* ======================================================== */}
+      {/* MODAL / LIGHTBOX DE IMAGEN A PANTALLA COMPLETA */}
+      {/* Navegación por teclado (← → Esc), botones y swipe táctil */}
+      {/* ======================================================== */}
+      <AnimatePresence>
+        {activeLightboxIndex !== null && filteredGallery[activeLightboxIndex] && (
+          <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            transition={{ duration: 0.2 }}
+            className="fixed inset-0 z-50 bg-[#02050f]/95 backdrop-blur-2xl flex flex-col justify-between p-3 sm:p-6 select-none overflow-y-auto"
+            onClick={handleCloseLightbox}
+            onTouchStart={handleTouchStart}
+            onTouchEnd={handleTouchEnd}
+          >
+            {/* Barra Superior del Lightbox */}
+            <div
+              className="w-full max-w-6xl mx-auto flex items-center justify-between py-2 px-1 relative z-20"
+              onClick={(e) => e.stopPropagation()}
+            >
+              <div className="flex items-center gap-3">
+                <span className="text-xs font-mono font-bold text-cyan-accent bg-cyan-accent/10 border border-cyan-accent/25 px-3 py-1 rounded-full">
+                  {activeLightboxIndex + 1} / {filteredGallery.length}
+                </span>
+                <span className="hidden sm:inline-block text-xs text-slate-400 font-medium">
+                  {filteredGallery[activeLightboxIndex].category}
+                </span>
+              </div>
+
+              <div className="flex items-center gap-3">
+                <span className="hidden md:inline-block text-[11px] text-slate-500 font-mono">
+                  Usa las flechas ← → del teclado para navegar
+                </span>
+                <button
+                  onClick={handleCloseLightbox}
+                  className="w-10 h-10 rounded-full bg-slate-900/90 border border-slate-700 hover:border-cyan-accent/60 text-slate-300 hover:text-white flex items-center justify-center transition-all hover:bg-slate-800 active:scale-95 shadow-lg"
+                  title="Cerrar modal (Esc)"
+                >
+                  <X className="w-5 h-5" />
+                </button>
+              </div>
+            </div>
+
+            {/* Área Central: Visualizador de Imagen con Botones Flotantes */}
+            <div
+              className="relative w-full max-w-6xl mx-auto flex-1 flex items-center justify-between gap-2 sm:gap-4 my-2 min-h-0"
+              onClick={(e) => e.stopPropagation()}
+            >
+              {/* Botón Anterior */}
+              <button
+                onClick={handlePrevImage}
+                className="w-10 h-10 sm:w-14 sm:h-14 rounded-full bg-slate-950/80 border border-slate-800 hover:border-cyan-accent hover:bg-cyan-accent hover:text-slate-950 text-white flex items-center justify-center transition-all shrink-0 shadow-2xl active:scale-95 group z-20"
+                title="Imagen anterior (Flecha izquierda)"
+              >
+                <ChevronLeft className="w-5 h-5 sm:w-7 sm:h-7 group-hover:-translate-x-0.5 transition-transform" />
+              </button>
+
+              {/* Contenedor de la Imagen */}
+              <div className="relative flex-1 flex items-center justify-center max-h-[64vh] sm:max-h-[72vh] w-full overflow-hidden">
+                <AnimatePresence mode="wait">
+                  <motion.div
+                    key={filteredGallery[activeLightboxIndex].id}
+                    initial={{ opacity: 0, scale: 0.96 }}
+                    animate={{ opacity: 1, scale: 1 }}
+                    exit={{ opacity: 0, scale: 0.96 }}
+                    transition={{ duration: 0.2 }}
+                    className="relative max-h-[64vh] sm:max-h-[72vh] max-w-full flex items-center justify-center"
+                  >
+                    <Image
+                      src={filteredGallery[activeLightboxIndex].src}
+                      alt={filteredGallery[activeLightboxIndex].title}
+                      width={1200}
+                      height={900}
+                      className="max-h-[64vh] sm:max-h-[72vh] w-auto max-w-full object-contain rounded-2xl shadow-[0_20px_60px_rgba(0,0,0,0.8)] border border-slate-800"
+                      priority
+                    />
+                  </motion.div>
+                </AnimatePresence>
+              </div>
+
+              {/* Botón Siguiente */}
+              <button
+                onClick={handleNextImage}
+                className="w-10 h-10 sm:w-14 sm:h-14 rounded-full bg-slate-950/80 border border-slate-800 hover:border-cyan-accent hover:bg-cyan-accent hover:text-slate-950 text-white flex items-center justify-center transition-all shrink-0 shadow-2xl active:scale-95 group z-20"
+                title="Imagen siguiente (Flecha derecha)"
+              >
+                <ChevronRight className="w-5 h-5 sm:w-7 sm:h-7 group-hover:translate-x-0.5 transition-transform" />
+              </button>
+            </div>
+
+            {/* Ficha Inferior Descriptiva */}
+            <div
+              className="w-full max-w-4xl mx-auto bg-[#081226]/95 border border-[#142a59] rounded-2xl p-4 sm:p-5 shadow-2xl backdrop-blur-xl relative z-20"
+              onClick={(e) => e.stopPropagation()}
+            >
+              <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+                <div className="space-y-1">
+                  <div className="flex items-center gap-2">
+                    <span className="text-[10px] font-mono uppercase tracking-wider text-cyan-accent bg-cyan-accent/10 px-2 py-0.5 rounded-full border border-cyan-accent/20">
+                      {filteredGallery[activeLightboxIndex].tag}
+                    </span>
+                    <span className="text-xs text-slate-400 font-semibold">
+                      {filteredGallery[activeLightboxIndex].category}
+                    </span>
+                  </div>
+                  <h4 className="text-base sm:text-lg font-bold text-white font-display">
+                    {filteredGallery[activeLightboxIndex].title}
+                  </h4>
+                  <p className="text-xs text-slate-300 leading-relaxed max-w-2xl">
+                    {filteredGallery[activeLightboxIndex].description}
+                  </p>
+                </div>
+
+                <div className="flex items-center gap-2 self-stretch sm:self-center shrink-0 pt-2 sm:pt-0 justify-between sm:justify-end">
+                  <div className="flex sm:hidden items-center gap-2 w-full">
+                    <button
+                      onClick={handlePrevImage}
+                      className="flex-1 py-2 px-3 rounded-xl bg-slate-900 border border-slate-800 text-xs font-semibold text-slate-200 active:scale-95 flex items-center justify-center gap-1"
+                    >
+                      <ChevronLeft className="w-4 h-4" /> Anterior
+                    </button>
+                    <button
+                      onClick={handleNextImage}
+                      className="flex-1 py-2 px-3 rounded-xl bg-cyan-accent text-slate-950 text-xs font-bold active:scale-95 flex items-center justify-center gap-1 shadow-sm"
+                    >
+                      Siguiente <ChevronRight className="w-4 h-4" />
+                    </button>
+                  </div>
+                  <a
+                    href={filteredGallery[activeLightboxIndex].src}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="hidden sm:inline-flex items-center gap-1.5 px-3.5 py-2 rounded-xl bg-[#0b1836] border border-[#193669] hover:border-cyan-accent/60 text-slate-200 hover:text-white text-xs font-semibold transition-colors"
+                  >
+                    <span>Abrir original</span>
+                    <ExternalLink className="w-3.5 h-3.5 text-cyan-accent" />
+                  </a>
+                </div>
+              </div>
+            </div>
           </motion.div>
         )}
       </AnimatePresence>
