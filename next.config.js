@@ -15,6 +15,10 @@ const nextConfig = {
         source: '/maurojas.html',
         destination: '/maurojas',
       },
+      {
+        source: '/mauriciorojas.html',
+        destination: '/mauriciorojas',
+      },
     ];
   },
   async headers() {
