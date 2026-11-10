@@ -20,8 +20,8 @@ export function Header() {
     return () => window.removeEventListener("scroll", handleScroll);
   }, []);
 
-  // Hide header completely on digital card route (/maurojas) and private QR studio (/qr, /r)
-  if (pathname?.includes("/maurojas") || pathname?.startsWith("/qr") || pathname?.startsWith("/r")) {
+  // Hide header completely on digital card route (/maurojas, /mauriciorojas) and private QR studio (/qr, /r)
+  if (pathname?.includes("/maurojas") || pathname?.includes("/mauriciorojas") || pathname?.startsWith("/qr") || pathname?.startsWith("/r")) {
     return null;
   }
 
