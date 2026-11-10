@@ -7,13 +7,10 @@ import { TextReveal } from "@/components/TextReveal";
 import { AboutSection } from "@/components/AboutSection";
 import { ServicesSection } from "@/components/ServicesSection";
 import { ClientsSection } from "@/components/ClientsSection";
-import { ProjectCard } from "@/components/ProjectCard";
-import { PROJECTS } from "@/data/projects";
+import { PortfolioGallery } from "@/components/PortfolioGallery";
 import { ArrowUpRight, ChevronDown } from "lucide-react";
 
 export default function Home() {
-  const featuredProjects = PROJECTS.filter((p) => p.featured);
-
   return (
     <div className="relative">
       {/* HERO SECTION */}
@@ -30,7 +27,7 @@ export default function Home() {
         <div className="absolute top-1/4 -right-20 sm:-right-32 w-[320px] sm:w-[500px] h-[300px] sm:h-[400px] bg-cyan-accent/15 rounded-full blur-[90px] sm:blur-[120px] pointer-events-none -rotate-45" />
         <div className="absolute top-1/4 left-1/2 -translate-x-1/2 w-[340px] sm:w-[800px] h-[340px] sm:h-[500px] bg-[radial-gradient(circle_at_center,rgba(0,180,255,0.18)_0%,rgba(4,8,20,0)_70%)] pointer-events-none blur-2xl" />
 
-        {/* Top Logo - Much bigger on mobile */}
+        {/* Top Logo - Much bigger on desktop */}
         <div className="relative z-10 w-full flex justify-center pt-2 sm:pt-4">
           <motion.div
             initial={{ opacity: 0, scale: 0.9 }}
@@ -41,9 +38,9 @@ export default function Home() {
             <Image
               src="/img/Alternika_logo.svg"
               alt="Alternika Logo"
-              width={420}
-              height={140}
-              className="h-28 sm:h-24 md:h-28 lg:h-32 w-auto max-w-[88vw] object-contain drop-shadow-[0_0_35px_rgba(0,240,255,0.35)]"
+              width={650}
+              height={220}
+              className="h-24 sm:h-28 md:h-36 lg:h-48 xl:h-56 w-auto max-w-[92vw] object-contain drop-shadow-[0_0_45px_rgba(0,240,255,0.35)]"
               priority
             />
           </motion.div>
@@ -127,45 +124,14 @@ export default function Home() {
       {/* SERVICIOS EN ACORDEÓN */}
       <ServicesSection />
 
-      {/* PORTAFOLIO DESTACADO */}
-      <section className="py-20 md:py-36 bg-bg-dark relative">
+      {/* PORTAFOLIO MASONRY EN INDEX */}
+      <section id="portafolio" className="py-20 md:py-36 bg-bg-dark relative border-t border-bg-border/60">
         <div className="max-w-7xl mx-auto px-5 md:px-12">
-          {/* Header */}
-          <div className="flex flex-col md:flex-row md:items-end justify-between mb-12 md:mb-16 gap-6">
-            <div>
-              <motion.div
-                initial={{ opacity: 0, y: 20 }}
-                whileInView={{ opacity: 1, y: 0 }}
-                viewport={{ once: true }}
-                className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full border border-cyan-accent/30 bg-cyan-dim text-cyan-accent text-xs font-semibold uppercase tracking-wider mb-4"
-              >
-                <span className="w-2 h-2 rounded-full bg-cyan-accent" />
-                Casos de Éxito
-              </motion.div>
-              <h2 className="font-display text-2xl sm:text-4xl md:text-5xl font-extrabold text-white">
-                <TextReveal text="Proyectos Destacados" highlightWords={["Proyectos"]} align="left" />
-              </h2>
-            </div>
-          </div>
-
-          {/* Project Cards Grid */}
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-8 md:gap-12 mb-16">
-            {featuredProjects.map((project, idx) => (
-              <ProjectCard key={project.id} project={project} index={idx} />
-            ))}
-          </div>
-
-          {/* Bottom Button "Ver más proyectos" */}
-          <div className="flex justify-center pt-4">
-            <Link
-              href="/proyectos"
-              className="inline-flex items-center gap-3 px-10 py-4 rounded-full bg-cyan-dim border border-cyan-accent/50 text-cyan-accent hover:bg-cyan-accent hover:text-slate-950 font-extrabold text-base transition-all duration-300 shadow-[0_0_25px_rgba(0,240,255,0.25)] group"
-              data-cursor="PORTAFOLIO"
-            >
-              <span>Ver más proyectos</span>
-              <ArrowUpRight className="w-5 h-5 group-hover:translate-x-1 group-hover:-translate-y-1 transition-transform" />
-            </Link>
-          </div>
+          <PortfolioGallery
+            title="Galería de Portafolio"
+            badge="Trabajos Selectos"
+            showSectionHeader={true}
+          />
         </div>
       </section>
 
